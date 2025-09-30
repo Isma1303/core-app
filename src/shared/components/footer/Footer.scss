@@ -1,0 +1,15 @@
+@import '../../../themes/generated/variables.base.scss';
+
+.footer {
+    display: block;
+    color: rgba($base-text-color, alpha($base-text-color) * 0.7);
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    padding-top: 20px;
+    padding-bottom: 24px;
+}
+
+.footer a {
+    color: #1a2b55;
+    text-decoration: none;
+    font-weight: 500;
+}

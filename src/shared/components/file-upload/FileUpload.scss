@@ -1,0 +1,52 @@
+.file-upload-component {
+    .drag-and-drop {
+        border: 2px dashed #1a2b55;
+        border-radius: 10px;
+        padding: 10px;
+        text-align: center;
+        transition: border-color 0.3s ease-in-out;
+    }
+
+    i {
+        font-size: 5em;
+        color: #1a2b55;
+    }
+
+    .drag-and-drop.drag-over {
+        border-color: #7a9ebc;
+    }
+
+    .drag-and-drop p {
+        font-size: 1rem;
+        margin: 0;
+        padding: 5px;
+    }
+
+    .drag-and-drop:hover {
+        cursor: pointer;
+    }
+
+    .drag-and-drop.drag-enter {
+        animation: pulse 0.5s infinite;
+    }
+
+    @keyframes pulse {
+        0% {
+            transform: scale(1);
+        }
+        50% {
+            transform: scale(1.2);
+        }
+        100% {
+            transform: scale(1);
+        }
+    }
+
+    .input-file {
+        display: none;
+    }
+
+    .btn {
+        margin-top: 5px;
+    }
+}

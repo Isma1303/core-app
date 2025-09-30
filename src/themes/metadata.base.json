@@ -1,0 +1,18 @@
+{
+    "items": [
+        {
+            "key": "$base-accent",
+            "value": "rgba(26, 43, 85, 1)"
+        },
+        {
+            "key": "$badge-bg",
+            "value": "#1A2B55"
+        }
+    ],
+    "baseTheme": "material.blue.light.compact",
+    "assetsBasePath": "../../../node_modules/devextreme/dist/css/",
+    "outputColorScheme": "base",
+    "makeSwatch": false,
+    "widgets": [],
+    "removeExternalResources": false
+}
