@@ -1,20 +1,18 @@
 /* eslint-disable no-unused-vars */
-import { TreeViewTypes } from 'devextreme-react/tree-view'
-import { ButtonTypes } from 'devextreme-react/button'
 import React from 'react'
 
 export interface HeaderProps {
     menuToggleEnabled: boolean
     title?: string
-    toggleMenu: (e: ButtonTypes.ClickEvent) => void
+    toggleMenu: (e: React.MouseEvent) => void
     image?: string
 }
 
 export interface SideNavigationMenuProps {
-    selectedItemChanged: (e: TreeViewTypes.ItemClickEvent) => void
-    openMenu: (e: React.PointerEvent) => void
+    selectedItemChanged: (e: any) => void
+    openMenu: (e: React.MouseEvent | React.PointerEvent) => void
     compactMode: boolean
-    onMenuReady: (e: TreeViewTypes.ContentReadyEvent) => void
+    onMenuReady?: (e: any) => void
 }
 
 export interface UserPanelProps {

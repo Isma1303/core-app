@@ -1,43 +1,23 @@
 /* eslint-disable no-unused-vars */
-import DevExpress from 'devextreme'
-import {
-    CellClickEvent,
-    CellPreparedEvent,
-    ContentReadyEvent,
-    EditingStartEvent,
-    EditorPreparingEvent,
-    InitNewRowEvent,
-    KeyDownEvent,
-    RowClickEvent,
-    RowDblClickEvent,
-    RowExpandedEvent,
-    RowInsertedEvent,
-    RowPreparedEvent,
-    RowRemovingEvent,
-    RowUpdatedEvent,
-    SavingEvent,
-} from 'devextreme/ui/data_grid'
-import { ScpGridConfig } from './scp-grid-config.interface'
-import { DataGridRef, DataGridTypes } from 'devextreme-react/cjs/data-grid'
 
 export interface ScpDataGridActions {
-    onRowExpanded?: (event: RowExpandedEvent<DevExpress.common.GroupItem<any>, any>) => void
-    onInitNewRow?: (event: InitNewRowEvent<DevExpress.common.GroupItem<any>, any>) => void
-    onSelectionChanged?: (event: DataGridTypes.SelectionChangedEvent) => Promise<void>
-    onRowInserted?: (event: RowInsertedEvent<DevExpress.common.GroupItem<any>, any>) => void
-    onRowUpdated?: (event: RowUpdatedEvent<DevExpress.common.GroupItem<any>, any>) => void
-    onEditorPreparing?: (event: EditorPreparingEvent<DevExpress.common.GroupItem<any>, any>) => void
-    onEditorPreparingLocal?: (event: EditorPreparingEvent<DevExpress.common.GroupItem<any>, any>) => void
-    onKeyDown?: (event: KeyDownEvent<DevExpress.common.GroupItem<any>, any>) => void
-    onEditingStart?: (event: EditingStartEvent<DevExpress.common.GroupItem<any>, any>) => void
-    onRowClick?: (event: RowClickEvent<DevExpress.common.GroupItem<any>, any>) => void
-    onRowDblClick?: (event: RowDblClickEvent<DevExpress.common.GroupItem<any>, any>) => void
-    onRowPrepared?: (event: RowPreparedEvent<DevExpress.common.GroupItem<any>, any>) => void
-    onCellPrepared?: (event: CellPreparedEvent<DevExpress.common.GroupItem<any>, any>) => void
-    onContentReady?: (event: ContentReadyEvent<DevExpress.common.GroupItem<any>, any>) => void
-    onCellClick?: (event: CellClickEvent<DevExpress.common.GroupItem<any>, any>) => void
-    onSaving?: (event: SavingEvent<DevExpress.common.GroupItem<any>, any>) => void
-    onRowRemoving?: (event: RowRemovingEvent<DevExpress.common.GroupItem<any>, any>) => void
+    onRowExpanded?: (event: any) => void
+    onInitNewRow?: (event: any) => void
+    onSelectionChanged?: (event: any) => Promise<void>
+    onRowInserted?: (event: any) => void
+    onRowUpdated?: (event: any) => void
+    onEditorPreparing?: (event: any) => void
+    onEditorPreparingLocal?: (event: any) => void
+    onKeyDown?: (event: any) => void
+    onEditingStart?: (event: any) => void
+    onRowClick?: (event: any) => void
+    onRowDblClick?: (event: any) => void
+    onRowPrepared?: (event: any) => void
+    onCellPrepared?: (event: any) => void
+    onContentReady?: (event: any) => void
+    onCellClick?: (event: any) => void
+    onSaving?: (event: any) => void
+    onRowRemoving?: (event: any) => void
     getSelectedData: () => Promise<void>
     getSelectedDataDelete: () => Promise<void>
     exportGridToPDF: () => void
@@ -46,21 +26,21 @@ export interface ScpDataGridActions {
 }
 
 export interface ScpDataGridProps {
-    dataGrid: React.RefObject<DataGridRef<any, any>>
-    configuration: ScpGridConfig
-    onInitNewRow?: (event: InitNewRowEvent<DevExpress.common.GroupItem<any>, any>) => void
+    dataGrid: React.RefObject<any>
+    configuration: any
+    onInitNewRow?: (event: any) => void
     onEscapeDown?: () => void
-    onEditingStart?: (event: EditingStartEvent<DevExpress.common.GroupItem<any>, any>) => void
-    onSelectionChanged?: (event: DataGridTypes.SelectionChangedEvent) => Promise<void>
-    onEditorPreparing?: (event: EditorPreparingEvent<DevExpress.common.GroupItem<any>, any>) => void
-    onRowClick?: (event: RowClickEvent<DevExpress.common.GroupItem<any>, any>) => void
-    onRowDblClick?: (event: RowDblClickEvent<DevExpress.common.GroupItem<any>, any>) => void
-    onRowPrepared?: (event: RowPreparedEvent<DevExpress.common.GroupItem<any>, any>) => void
-    onCellPrepared?: (event: CellPreparedEvent<DevExpress.common.GroupItem<any>, any>) => void
-    onContentReady?: (event: ContentReadyEvent<DevExpress.common.GroupItem<any>, any>) => void
-    onCellClick?: (event: CellClickEvent<DevExpress.common.GroupItem<any>, any>) => void
-    onSaving?: (event: SavingEvent<DevExpress.common.GroupItem<any>, any>) => void
-    onRowRemoving?: (event: RowRemovingEvent<DevExpress.common.GroupItem<any>, any>) => void
+    onEditingStart?: (event: any) => void
+    onSelectionChanged?: (event: any) => Promise<void>
+    onEditorPreparing?: (event: any) => void
+    onRowClick?: (event: any) => void
+    onRowDblClick?: (event: any) => void
+    onRowPrepared?: (event: any) => void
+    onCellPrepared?: (event: any) => void
+    onContentReady?: (event: any) => void
+    onCellClick?: (event: any) => void
+    onSaving?: (event: any) => void
+    onRowRemoving?: (event: any) => void
 }
 
 export interface UseDataGridEventsEmits {

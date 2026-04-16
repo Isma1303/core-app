@@ -1,21 +1,22 @@
-import { useState, useRef, useCallback } from 'react'
+import { useState, useCallback } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import Form, { Item, Label, ButtonItem, ButtonOptions, RequiredRule, CustomRule, EmailRule } from 'devextreme-react/form'
-import notify from 'devextreme/ui/notify'
-import LoadIndicator from 'devextreme-react/load-indicator'
 import { createAccount } from '../../services'
-import { ValidationCallbackData } from 'devextreme-react/common'
 import './CreateAccountForm.scss'
 
 export const CreateAccountForm = (): JSX.Element => {
     const navigate = useNavigate()
     const [loading, setLoading] = useState(false)
-    const formData = useRef({ email: '', password: '' })
+    const [email, setEmail] = useState('')
+    const [password, setPassword] = useState('')
+    const [confirmPassword, setConfirmPassword] = useState('')
 
     const onSubmit = useCallback(
-        async (e: any) => {
+        async (e: React.FormEvent) => {
             e.preventDefault()
-            const { email, password } = formData.current
+            if (password !== confirmPassword) {
+                alert('Passwords do not match')
+                return
+            }
             setLoading(true)
 
             const result = await createAccount(email, password)
@@ -24,53 +25,47 @@ export const CreateAccountForm = (): JSX.Element => {
             if (result.isOk) {
                 navigate('/login')
             } else {
-                notify(result.message, 'error', 2000)
+                alert(result.message)
             }
         },
-        [navigate]
+        [navigate, email, password, confirmPassword]
     )
 
-    const confirmPassword = useCallback(({ value }: ValidationCallbackData) => value === formData.current.password, [])
-
     return (
-        <form className={'create-account-form'} onSubmit={onSubmit}>
-            <Form formData={formData.current} disabled={loading}>
-                <Item dataField={'email'} editorType={'dxTextBox'} editorOptions={emailEditorOptions}>
-                    <RequiredRule message="Email is required" />
-                    <EmailRule message="Email is invalid" />
-                    <Label visible={false} />
-                </Item>
-                <Item dataField={'password'} editorType={'dxTextBox'} editorOptions={passwordEditorOptions}>
-                    <RequiredRule message="Password is required" />
-                    <Label visible={false} />
-                </Item>
-                <Item dataField={'confirmedPassword'} editorType={'dxTextBox'} editorOptions={confirmedPasswordEditorOptions}>
-                    <RequiredRule message="Password is required" />
-                    <CustomRule message={'Passwords do not match'} validationCallback={confirmPassword} />
-                    <Label visible={false} />
-                </Item>
-                <Item>
-                    <div className="policy-info">
-                        By creating an account, you agree to the <Link to="#">Terms of Service</Link> and <Link to="#">Privacy Policy</Link>
-                    </div>
-                </Item>
-                <ButtonItem>
-                    <ButtonOptions width={'100%'} type={'default'} useSubmitBehavior={true}>
-                        <span className="dx-button-text">
-                            {loading ? <LoadIndicator width={'24px'} height={'24px'} visible={true} /> : 'Create a new account'}
-                        </span>
-                    </ButtonOptions>
-                </ButtonItem>
-                <Item>
-                    <div className={'login-link'}>
-                        Have an account? <Link to={'/login'}>Sign In</Link>
-                    </div>
-                </Item>
-            </Form>
+        <form className={'create-account-form'} onSubmit={onSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <input 
+                type="email" 
+                placeholder="Email" 
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                style={{ padding: '0.5rem' }}
+                required 
+            />
+            <input 
+                type="password" 
+                placeholder="Password" 
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                style={{ padding: '0.5rem' }}
+                required 
+            />
+            <input 
+                type="password" 
+                placeholder="Confirm Password" 
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                style={{ padding: '0.5rem' }}
+                required 
+            />
+            <div className="policy-info">
+                By creating an account, you agree to the <Link to="#">Terms of Service</Link> and <Link to="#">Privacy Policy</Link>
+            </div>
+            <button type="submit" disabled={loading} style={{ padding: '0.5rem' }}>
+                {loading ? 'Cargando...' : 'Create a new account'}
+            </button>
+            <div className={'login-link'}>
+                Have an account? <Link to={'/login'}>Sign In</Link>
+            </div>
         </form>
     )
 }
-
-const emailEditorOptions = { stylingMode: 'filled', placeholder: 'Email', mode: 'email' }
-const passwordEditorOptions = { stylingMode: 'filled', placeholder: 'Password', mode: 'password' }
-const confirmedPasswordEditorOptions = { stylingMode: 'filled', placeholder: 'Confirm Password', mode: 'password' }

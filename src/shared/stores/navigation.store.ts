@@ -2,7 +2,6 @@
 
 import { create, StateCreator } from 'zustand'
 import { NavigationItem } from '../interfaces/navigation-item.interface'
-import notify from 'devextreme/ui/notify'
 import { getNestedMenuOptions } from '../services/menu-options.service'
 
 export interface NavigationState {
@@ -28,7 +27,7 @@ const storeApi: StateCreator<NavigationState & Actions> = (set) => ({
             const response = await getNestedMenuOptions()
             set({ navigation: response, isLoadingPaths: false })
         } catch (error: any) {
-            notify(error.message, 'error', 2000)
+            console.error(error.message)
             set({ navigation: [], isLoadingPaths: false })
         }
     },

@@ -1,12 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable no-unused-vars */
-import { Button } from 'devextreme-react'
-import notify from 'devextreme/ui/notify'
 import { DragEvent, forwardRef, useImperativeHandle, useRef, useState } from 'react'
-
-import { ClickEvent } from 'devextreme/ui/button'
-import { confirm } from 'devextreme/ui/dialog'
-
 import './FileUpload.scss'
 
 interface Props {
@@ -37,7 +31,7 @@ export const FileUpload = forwardRef<FileUploadRef, Props>(({ onFileProcessed }:
         const files = event.dataTransfer.files
 
         if (files[0].type !== 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-            return notify('Sólo se permiten subir archivos con extensión xlsx', 'error', 3600)
+            return alert('Sólo se permiten subir archivos con extensión xlsx')
 
         const activeFile = files[0]
 
@@ -51,7 +45,7 @@ export const FileUpload = forwardRef<FileUploadRef, Props>(({ onFileProcessed }:
 
         setXlsxFile(newFile)
         setEnableFinishButton(true)
-        notify('Archivo preparado exitosamente', 'success', 3600)
+        alert('Archivo preparado exitosamente')
     }
 
     const onFileSelected = async (event: any) => {
@@ -60,7 +54,7 @@ export const FileUpload = forwardRef<FileUploadRef, Props>(({ onFileProcessed }:
         const files = event.target.files
 
         if (files[0].type !== 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-            return notify('Sólo se permiten subir archivos con extensión xlsx', 'error', 3600)
+            return alert('Sólo se permiten subir archivos con extensión xlsx')
 
         const activeFile = files[0]
         setXlsxFile(activeFile)
@@ -72,13 +66,13 @@ export const FileUpload = forwardRef<FileUploadRef, Props>(({ onFileProcessed }:
         setFileName(activeFile.name)
 
         setEnableFinishButton(true)
-        notify('Archivo preparado exitosamente', 'success', 3600)
+        alert('Archivo preparado exitosamente')
     }
 
     const cloneFile = (originalFile: File): File => new File([originalFile], originalFile.name, { type: originalFile.type })
 
-    const onProcessFile = async (event: ClickEvent) => {
-        const confirmResponse = await confirm('¿Está seguro de cargar el archivo seleccionado?', 'Confirmación')
+    const onProcessFile = async () => {
+        const confirmResponse = window.confirm('¿Está seguro de cargar el archivo seleccionado?')
         if (!confirmResponse) return
 
         if (xlsxFile === null || xlsxFile === undefined) return
@@ -120,16 +114,16 @@ export const FileUpload = forwardRef<FileUploadRef, Props>(({ onFileProcessed }:
 
             <div className="row mx-3">
                 <div className="col d-flex justify-content-end mt-3">
-                    <Button
+                    <button
+                        className="btn btn-primary"
                         disabled={!enableFinishButton}
-                        height="3em"
-                        icon="cloud-upload"
-                        type="default"
-                        text="Procesar archivo"
                         onClick={onProcessFile}
-                    />
+                        style={{ height: '3em' }}
+                    >
+                        Procesar archivo
+                    </button>
                 </div>
             </div>
         </div>
     )
-})
+}))

@@ -1,20 +1,13 @@
 /* eslint-disable no-prototype-builtins */
-import CustomStore from 'devextreme/data/custom_store'
-import { DataService, ScpGridConfig } from '../../shared/interfaces'
+import { DataService } from '../../shared/interfaces'
 import { useAuthStore } from '../../auth'
 import { MenuOption } from '../interfaces'
-import { MenuOptionsService } from '../services'
-import { customStoreReadOnlyBuilder } from '../../shared/builders/custom-store-builder.builder'
 
 export const useMenuOptionsDataGridConfig = (menuOptionsService: DataService<MenuOption>) => {
     const userInfo = useAuthStore((state) => state.userInfo)
 
-    const parentMenuOptionsService = new MenuOptionsService()
-
-    const parentsMenuOptionsCustomStore = customStoreReadOnlyBuilder<MenuOption>(parentMenuOptionsService, 'menu_option_id')
-
-    const obtenerConfig = async (dataSource: CustomStore): Promise<ScpGridConfig> => {
-        const config: ScpGridConfig = {
+    const obtenerConfig = async (dataSource: any): Promise<any> => {
+        const config: any = {
             dataSource: dataSource,
             dataId: 'menu_option_id',
             columns: [
@@ -58,7 +51,7 @@ export const useMenuOptionsDataGridConfig = (menuOptionsService: DataService<Men
                         },
                     ],
                     lookup: {
-                        dataSource: parentsMenuOptionsCustomStore,
+                        dataSource: [],
                         valueExpr: 'menu_option_id',
                         displayExpr: 'menu_option',
                     },

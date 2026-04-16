@@ -1,34 +1,29 @@
 /* eslint-disable no-unused-vars */
-import CustomStore from 'devextreme/data/custom_store'
 import { MenuOptionToRole, Role } from '../interfaces'
 import { Condition, DataService } from '../../shared/interfaces'
-import { ScpGridConfig } from '../../shared/interfaces'
-import { DataGridRef } from 'devextreme-react/cjs/data-grid'
-import notify from 'devextreme/ui/notify'
 import { MenuOptionsToRolesService } from '../services'
-import { TreeViewTypes } from 'devextreme-react/cjs/tree-view'
 
 interface Params {
     menuOptionId: number
     roleId: number
     menuOptionsToRolesService: MenuOptionsToRolesService
     rolesService: DataService<Role>
-    menuOptionsToRolesDatagrid: React.RefObject<DataGridRef<any, any>>
+    menuOptionsToRolesDatagrid: React.RefObject<any>
 }
 
 interface UseMenuOptionsToRoles {
-    rolesCustomStore: CustomStore<MenuOptionToRole, any>
-    rolesToMenuOptionsCustomStore: CustomStore<MenuOptionToRole, any>
-    rolesConfig: ScpGridConfig
+    rolesCustomStore: any
+    rolesToMenuOptionsCustomStore: any
+    rolesConfig: any
     saveAssignments: () => Promise<void>
-    syncTreeView: (e: TreeViewTypes.ItemSelectionChangedEvent) => Promise<void>
+    syncTreeView: (e: any) => Promise<void>
 }
 
 export const useMenuOptionsToRoles = (params: Params): UseMenuOptionsToRoles => {
     const options: Set<number> = new Set()
-    const rolesCustomStore = new CustomStore({
+    const rolesCustomStore = {
         key: 'role_id',
-        load: async (loadOptions) => {
+        load: async (loadOptions: any) => {
             if (params.menuOptionId !== 0) {
                 return params.menuOptionsToRolesService
                     .getRoles(params.menuOptionId)
@@ -44,9 +39,9 @@ export const useMenuOptionsToRoles = (params: Params): UseMenuOptionsToRoles => 
                 return params.rolesService.getRecords(loadOptions.skip || 0, loadOptions.take || totalRecords).catch(() => [])
             }
         },
-    })
+    }
 
-    const rolesToMenuOptionsCustomStore = new CustomStore({
+    const rolesToMenuOptionsCustomStore = {
         key: 'menu_option_id',
         load: async () => {
             if (params.roleId === 0) return []
@@ -54,9 +49,9 @@ export const useMenuOptionsToRoles = (params: Params): UseMenuOptionsToRoles => 
                 return []
             })
         },
-    })
+    }
 
-    const rolesConfig: ScpGridConfig = {
+    const rolesConfig: any = {
         dataSource: rolesCustomStore,
         dataId: 'role_id',
         columns: [
@@ -90,8 +85,7 @@ export const useMenuOptionsToRoles = (params: Params): UseMenuOptionsToRoles => 
             .map((menuOptionId) => {
                 return { menu_option_id: menuOptionId, role_id: params.roleId }
             })
-        // const deleteAcctions = savingRowsEvent.changes.filter((change: any) => change.data.assigned == false).map((change: any) => change.key)
-        // if (deleteAcctions.length > 0) {
+
         const condiciones: Condition[] = [
             {
                 field: 'role_id',
@@ -101,33 +95,27 @@ export const useMenuOptionsToRoles = (params: Params): UseMenuOptionsToRoles => 
         const deletePermisionResponse = await params.menuOptionsToRolesService.deleteMenuOptions(condiciones).catch(() => 0)
 
         if (deletePermisionResponse === 1) {
-            notify('Permisos Revocados con Éxito', 'info', 3000)
+            alert('Permisos Revocados con Éxito')
         }
-        // }
-        // const menuOptionsToRole = savingRowsEvent.changes
-        //     .filter((change: any) => change.data.assigned == true)
-        //     .map((change: any) => {
-        //         return { menu_option_id: change.key, role_id: params.roleId }
-        //     })
+
         if (menuOptionsToRole.length > 0) {
             const respuestaAsignacionPermisos = await params.menuOptionsToRolesService
                 .createRecords(menuOptionsToRole)
                 .catch(() => ({} as MenuOptionToRole))
 
             if (respuestaAsignacionPermisos.role_id) {
-                notify('Permisos Aplicados con Éxito', 'info', 3000)
+                alert('Permisos Aplicados con Éxito')
             }
         }
     }
 
-    const syncTreeView = async (e: TreeViewTypes.ItemSelectionChangedEvent) => {
+    const syncTreeView = async (e: any) => {
         options.clear()
-        e.component.getSelectedNodes().forEach((node: TreeViewTypes.Node) => {
+        e.component.getSelectedNodes().forEach((node: any) => {
             options.add(Number(node?.parent?.parent?.itemData?.id))
             options.add(Number(node?.parent?.itemData?.id))
             options.add(Number(node?.itemData?.id))
         })
-        // return options
     }
 
     return {

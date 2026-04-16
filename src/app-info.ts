@@ -1,4 +1,4 @@
 const appInfo = {
-    title: 'SolcompCoreReact',
+    title: 'CoreReact',
 }
 export default appInfo

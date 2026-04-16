@@ -5,6 +5,12 @@
         "lib": ["ES2020", "DOM", "DOM.Iterable"],
         "module": "ESNext",
         "skipLibCheck": true,
+        "baseUrl": ".",
+        "paths": {
+            "@/*": [
+                "./src/*"
+            ]
+        },
 
         /* Bundler mode */
         "moduleResolution": "bundler",
@@ -21,5 +27,5 @@
         "noFallthroughCasesInSwitch": false,
         "noImplicitThis": false
     },
-    "include": ["src", "devextreme-license.ts"]
+    "include": ["src", "devextreme-license.ts"],    
 }

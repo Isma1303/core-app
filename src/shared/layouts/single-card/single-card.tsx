@@ -1,4 +1,3 @@
-import ScrollView from 'devextreme-react/scroll-view'
 import './single-card.scss'
 
 interface Props {
@@ -9,7 +8,7 @@ interface Props {
 
 export const SingleCard = ({ title, description, children }: Props): JSX.Element => {
     return (
-        <ScrollView height={'100%'} width={'100%'} className={'with-footer single-card'}>
+        <div style={{ height: '100%', width: '100%', overflowY: 'auto' }} className={'with-footer single-card'}>
             <div className={'dx-card content'}>
                 <div className={'header'}>
                     <div className={'title'}>{title}</div>
@@ -17,6 +16,6 @@ export const SingleCard = ({ title, description, children }: Props): JSX.Element
                 </div>
                 {children}
             </div>
-        </ScrollView>
+        </div>
     )
 }

@@ -1,5 +1,4 @@
 import { useEffect } from 'react'
-import hideToasts from 'devextreme/ui/toast/hide_toasts'
 import { useNavigationStore } from '../../shared/stores'
 
 export const withNavigationWatcher = (Component: React.FC<JSX.Element>, path: string): JSX.Element => {
@@ -7,7 +6,6 @@ export const withNavigationWatcher = (Component: React.FC<JSX.Element>, path: st
         const setCurrentPath = useNavigationStore((state) => state.setCurrentPath)
 
         useEffect(() => {
-            hideToasts()
             setCurrentPath(path)
         }, [setCurrentPath])
         return <Component {...props} />

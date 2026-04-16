@@ -1,14 +1,13 @@
 /* eslint-disable no-prototype-builtins */
-import CustomStore from 'devextreme/data/custom_store'
-import { DataService, ScpGridConfig } from '../../shared/interfaces'
+import { DataService } from '../../shared/interfaces'
 import { useAuthStore } from '../../auth'
 import { Table } from '../interfaces'
 
 export const useTablesDataGridConfig = (tablesService: DataService<Table>) => {
     const userInfo = useAuthStore((state) => state.userInfo)
 
-    const obtenerConfig = async (dataSource: CustomStore): Promise<ScpGridConfig> => {
-        const config: ScpGridConfig = {
+    const obtenerConfig = async (dataSource: any): Promise<any> => {
+        const config: any = {
             dataSource: dataSource,
             dataId: 'table_id',
             columns: [

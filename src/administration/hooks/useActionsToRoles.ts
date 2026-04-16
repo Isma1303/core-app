@@ -1,32 +1,28 @@
 /* eslint-disable no-unused-vars */
-import CustomStore from 'devextreme/data/custom_store'
 import { ActionsToRolesService } from '../services/actions-to-roles.service'
 import { ActionToRole, Role } from '../interfaces'
 import { Condition, DataService } from '../../shared/interfaces'
-import { ScpGridConfig } from '../../shared/interfaces'
-import { DataGridRef, DataGridTypes } from 'devextreme-react/cjs/data-grid'
-import notify from 'devextreme/ui/notify'
 
 interface Params {
     actionId: number
     roleId: number
     actionsToRolesService: ActionsToRolesService
     rolesService: DataService<Role>
-    actionsToRolesDatagrid: React.RefObject<DataGridRef<any, any>>
+    actionsToRolesDatagrid: React.RefObject<any>
 }
 
 interface UseActionsToRoles {
-    rolesCustomStore: CustomStore<ActionToRole, any>
-    rolesToActionsCustomStore: CustomStore<ActionToRole, any>
-    rolesConfig: ScpGridConfig
-    actionsConfig: ScpGridConfig
-    saveAssignments: (savingRowsEvent: DataGridTypes.SavingEvent) => Promise<void>
+    rolesCustomStore: any
+    rolesToActionsCustomStore: any
+    rolesConfig: any
+    actionsConfig: any
+    saveAssignments: (savingRowsEvent: any) => Promise<void>
 }
 
 export const useActionsToRoles = (params: Params): UseActionsToRoles => {
-    const rolesCustomStore = new CustomStore({
+    const rolesCustomStore = {
         key: 'role_id',
-        load: async (loadOptions) => {
+        load: async (loadOptions: any) => {
             if (params.actionId !== 0) {
                 return params.actionsToRolesService
                     .getRoles(params.actionId)
@@ -42,9 +38,9 @@ export const useActionsToRoles = (params: Params): UseActionsToRoles => {
                 return params.rolesService.getRecords(loadOptions.skip || 0, loadOptions.take || totalRecords).catch(() => [])
             }
         },
-    })
+    }
 
-    const rolesToActionsCustomStore = new CustomStore({
+    const rolesToActionsCustomStore = {
         key: 'action_id',
         load: async () => {
             if (params.roleId === 0) return []
@@ -52,9 +48,9 @@ export const useActionsToRoles = (params: Params): UseActionsToRoles => {
                 return []
             })
         },
-    })
+    }
 
-    const rolesConfig: ScpGridConfig = {
+    const rolesConfig: any = {
         dataSource: rolesCustomStore,
         dataId: 'role_id',
         columns: [
@@ -82,7 +78,7 @@ export const useActionsToRoles = (params: Params): UseActionsToRoles => {
         margin: '1',
     }
 
-    const actionsConfig: ScpGridConfig = {
+    const actionsConfig: any = {
         dataSource: rolesToActionsCustomStore,
         dataId: 'accion_id',
         columns: [
@@ -122,7 +118,7 @@ export const useActionsToRoles = (params: Params): UseActionsToRoles => {
         editMode: 'batch',
     }
 
-    const saveAssignments = async (savingRowsEvent: DataGridTypes.SavingEvent) => {
+    const saveAssignments = async (savingRowsEvent: any) => {
         savingRowsEvent.cancel = true
         const deleteAcctions = savingRowsEvent.changes.filter((change: any) => change.data.assigned == false).map((change: any) => change.key)
         if (deleteAcctions.length > 0) {
@@ -140,7 +136,7 @@ export const useActionsToRoles = (params: Params): UseActionsToRoles => {
             const deletePermisionResponse = await params.actionsToRolesService.deleteActions(condiciones).catch(() => 0)
 
             if (deletePermisionResponse === 1) {
-                notify('Permisos Revocados con Éxito', 'info', 3000)
+                alert('Permisos Revocados con Éxito')
             }
         }
         const actionsToRole = savingRowsEvent.changes
@@ -152,7 +148,7 @@ export const useActionsToRoles = (params: Params): UseActionsToRoles => {
             const respuestaAsignacionPermisos = await params.actionsToRolesService.createRecords(actionsToRole).catch(() => ({} as ActionToRole))
 
             if (respuestaAsignacionPermisos.role_id) {
-                notify('Permisos Aplicados con Éxito', 'info', 3000)
+                alert('Permisos Aplicados con Éxito')
             }
         }
         params.actionsToRolesDatagrid.current?.instance().refresh()

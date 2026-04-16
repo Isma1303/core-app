@@ -1,2 +1,0 @@
-//Agregar licencia y cambiar nombre a devextreme-license.ts
-export const licenseKey = ''

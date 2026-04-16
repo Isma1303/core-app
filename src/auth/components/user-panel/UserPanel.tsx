@@ -1,7 +1,5 @@
-import { useMemo, useCallback } from 'react'
+import { useMemo, useCallback, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import ContextMenu, { Position } from 'devextreme-react/context-menu'
-import List from 'devextreme-react/list'
 import './UserPanel.scss'
 import type { UserPanelProps } from '../../../types'
 import { useAuthStore } from '../..'
@@ -9,15 +7,18 @@ import { useAuthStore } from '../..'
 export const UserPanel = ({ menuMode }: UserPanelProps): JSX.Element => {
     const user = useAuthStore((state) => state.user)
     const deauthenticate = useAuthStore((state) => state.deauthenticate)
+    const [isMenuOpen, setIsMenuOpen] = useState(false)
 
     const navigate = useNavigate()
 
     const navigateToProfile = useCallback(() => {
         navigate('/profile')
+        setIsMenuOpen(false)
     }, [navigate])
 
     const logout = useCallback(() => {
         deauthenticate()
+        setIsMenuOpen(false)
     }, [deauthenticate])
 
     const menuItems = useMemo(
@@ -37,7 +38,7 @@ export const UserPanel = ({ menuMode }: UserPanelProps): JSX.Element => {
     )
     return (
         <div className={'user-panel'}>
-            <div className={'user-info'}>
+            <div className={'user-info'} onClick={() => setIsMenuOpen(!isMenuOpen)} style={{ cursor: 'pointer' }}>
                 <div className={'image-container'}>
                     <div
                         style={{
@@ -50,12 +51,26 @@ export const UserPanel = ({ menuMode }: UserPanelProps): JSX.Element => {
                 <div className={'user-name'}>{user!.name}</div>
             </div>
 
-            {menuMode === 'context' && (
-                <ContextMenu items={menuItems} target={'.user-button'} showEvent={'dxclick'} width={210} cssClass={'user-menu'}>
-                    <Position my={{ x: 'center', y: 'top' }} at={{ x: 'center', y: 'bottom' }} />
-                </ContextMenu>
+            {isMenuOpen && menuMode === 'context' && (
+                <div style={{ position: 'absolute', top: '100%', right: 0, backgroundColor: 'white', border: '1px solid #ccc', zIndex: 1000, minWidth: '150px' }}>
+                    <ul style={{ listStyle: 'none', margin: 0, padding: '0.5rem' }}>
+                        {menuItems.map((item, index) => (
+                            <li key={index} onClick={item.onClick} style={{ padding: '0.5rem', cursor: 'pointer', borderBottom: index < menuItems.length - 1 ? '1px solid #eee' : 'none' }}>
+                                {item.text}
+                            </li>
+                        ))}
+                    </ul>
+                </div>
             )}
-            {menuMode === 'list' && <List className={'dx-toolbar-menu-action'} items={menuItems} />}
+            {menuMode === 'list' && (
+                <ul style={{ listStyle: 'none', margin: 0, padding: '0.5rem' }}>
+                    {menuItems.map((item, index) => (
+                        <li key={index} onClick={item.onClick} style={{ padding: '0.5rem', cursor: 'pointer' }}>
+                            {item.text}
+                        </li>
+                    ))}
+                </ul>
+            )}
         </div>
     )
 }

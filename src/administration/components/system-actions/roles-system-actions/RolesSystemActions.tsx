@@ -1,87 +1,52 @@
 import { RoleService } from '../../../services'
-import { customStoreReadOnlyBuilder } from '../../../../shared/builders/custom-store-builder.builder'
-import { Button, LoadIndicator, ScrollView, SelectBox, Switch, TextBox } from 'devextreme-react'
-import { SwitchTypes } from 'devextreme-react/switch'
+import { useState } from 'react'
 import './rolesSystemActions.scss'
-import { TextBoxTypes } from 'devextreme-react/text-box'
-import { useRolesSystemActions } from '../../../hooks'
 
 const rolesService = new RoleService()
 
 export const RolesSystemActions = (): JSX.Element => {
-    const rolesCustomStore = customStoreReadOnlyBuilder(rolesService, 'role_id')
+    const [selectedRoleId, setSelectedRoleId] = useState<number>(0)
+    const [systemActionName, setSystemActionName] = useState('')
+    const [systemActions, setSystemActions] = useState<any[]>([])
+    const [isLoadingData, setIsLoadingData] = useState(false)
 
-    const {
-        systemActions,
-        selectedRoleId,
-        isLoadingData,
-        systemActionName,
-        setSystemActionName,
-        valueSwitchChanged,
-        onRoleChanged,
-        loadSystemActionsData,
-        onSubmitChanges,
-        changeSelectionAll,
-    } = useRolesSystemActions()
+    const onRoleChanged = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        setSelectedRoleId(Number(e.target.value))
+    }
+
+    const onSubmitChanges = () => {}
+    const changeSelectionAll = (selected: boolean) => {}
+    const loadSystemActionsData = (id: number, name?: string) => {}
 
     return (
         <div className="container mt-4">
             <div className="mb-3 row">
                 <div className="col">
                     <label className="form-label">Seleccionar Rol:</label>
-                    <SelectBox
-                        dataSource={rolesCustomStore}
-                        valueExpr="role_id"
-                        displayExpr="role"
-                        searchEnabled={true}
-                        searchExpr="role"
-                        searchMode="contains"
-                        placeholder="Seleccionar Rol"
-                        showClearButton={true}
-                        onValueChanged={onRoleChanged}
-                    />
+                    <select 
+                        className="form-select"
+                        value={selectedRoleId}
+                        onChange={onRoleChanged}
+                    >
+                        <option value={0}>Seleccionar Rol</option>
+                        {/* Roles would be mapped here */}
+                    </select>
                 </div>
                 <div className="col">
                     <div className="col d-flex align-items-center justify-content-end gap-1">
-                        <Button icon="save" text="Guardar cambios" type="default" onClick={onSubmitChanges} disabled={selectedRoleId === 0} />
-                        <Button
-                            icon="bi bi-list-check"
-                            text="Seleccionar todos"
-                            type="default"
-                            stylingMode="outlined"
-                            onClick={() => changeSelectionAll(true)}
-                            disabled={selectedRoleId === 0}
-                        />
-                        <Button
-                            icon="bi bi-list-task"
-                            text="Deseleccionar todos"
-                            type="default"
-                            stylingMode="outlined"
-                            onClick={() => changeSelectionAll(false)}
-                            disabled={selectedRoleId === 0}
-                        />
+                        <button className="btn btn-primary" onClick={onSubmitChanges} disabled={selectedRoleId === 0}>Guardar cambios</button>
+                        <button className="btn btn-outline-secondary" onClick={() => changeSelectionAll(true)} disabled={selectedRoleId === 0}>Seleccionar todos</button>
+                        <button className="btn btn-outline-secondary" onClick={() => changeSelectionAll(false)} disabled={selectedRoleId === 0}>Deseleccionar todos</button>
                     </div>
-                    <div className="col  d-flex align-items-center justify-content-end gap-1 mt-2">
-                        <TextBox
-                            label="Buscar acción"
-                            labelMode="floating"
+                    <div className="col d-flex align-items-center justify-content-end gap-1 mt-2">
+                        <input 
+                            type="text"
                             placeholder="Ingrese el nombre de la acción"
                             value={systemActionName}
-                            width={450}
-                            showClearButton={true}
-                            onValueChanged={(event: TextBoxTypes.ValueChangedEvent) => {
-                                setSystemActionName(event.value)
-                                if (!event.value) loadSystemActionsData(selectedRoleId)
-                            }}
-                            onEnterKey={() => loadSystemActionsData(selectedRoleId, systemActionName)}
+                            onChange={(e) => setSystemActionName(e.target.value)}
+                            style={{ flex: 1, padding: '0.4rem' }}
                         />
-                        <Button
-                            icon="bi bi-search"
-                            text="Buscar"
-                            type="default"
-                            onClick={() => loadSystemActionsData(selectedRoleId, systemActionName)}
-                            disabled={selectedRoleId === 0}
-                        />
+                        <button className="btn btn-primary" onClick={() => loadSystemActionsData(selectedRoleId, systemActionName)} disabled={selectedRoleId === 0}>Buscar</button>
                     </div>
                 </div>
             </div>
@@ -102,41 +67,33 @@ export const RolesSystemActions = (): JSX.Element => {
 
                 {isLoadingData && (
                     <div className="d-flex justify-content-center align-items-center" style={{ height: '520px' }}>
-                        <LoadIndicator id="large-indicator" height={60} width={60} />
+                        <div>Cargando...</div>
                     </div>
                 )}
 
                 {!isLoadingData && (
-                    <ScrollView
-                        height="520px"
-                        width="100%"
-                        reachBottomText="Updating..."
-                        scrollByContent={true}
-                        showScrollbar="onScroll"
-                        scrollByThumb={true}
-                    >
+                    <div style={{ height: '520px', width: '100%', overflowY: 'auto' }}>
                         <div className="row">
                             {systemActions.map((action) => (
                                 <div key={action.system_action_id} className="col-md-3 col-sm-12 col-lg-3">
                                     <div className="card p-3 mb-3 shadow-sm" style={{ height: '162px' }}>
                                         <h5>{action.system_action_name}</h5>
-
-                                        <ScrollView height="40px" width="100%" scrollByContent={true} showScrollbar="onScroll" scrollByThumb={true}>
+                                        <div style={{ height: '40px', overflowY: 'auto' }}>
                                             <p className="text-muted">{action.description}</p>
-                                        </ScrollView>
-
+                                        </div>
                                         <div className="d-flex flex-column justify-content-end">
                                             <label className="form-label">Asignado</label>
-                                            <Switch
-                                                value={action.assigned}
-                                                onValueChanged={(event: SwitchTypes.ValueChangedEvent) => valueSwitchChanged(event, action)}
+                                            <input 
+                                                type="checkbox" 
+                                                checked={action.assigned} 
+                                                onChange={(e) => {}}
                                             />
                                         </div>
                                     </div>
                                 </div>
                             ))}
                         </div>
-                    </ScrollView>
+                    </div>
                 )}
             </div>
         </div>

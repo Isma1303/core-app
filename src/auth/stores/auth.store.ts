@@ -3,7 +3,6 @@ import { create, StateCreator } from 'zustand'
 import { SessionInfo, UserInfo, UserLogin } from '../interfaces'
 import { devtools, persist } from 'zustand/middleware'
 import { authenticate, getUserInfo } from '../services'
-import notify from 'devextreme/ui/notify'
 import { useSystemActionPermissionsStore } from '../../administration/stores'
 
 export interface AuthState {
@@ -40,7 +39,7 @@ const storeApi: StateCreator<AuthState & Actions> = (set) => ({
             return true
         } catch (error: any) {
             set({ status: false, token: undefined, user: undefined })
-            notify(error.message, 'error', 2000)
+            console.error(error.message)
             return false
         }
     },

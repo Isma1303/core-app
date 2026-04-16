@@ -1,21 +1,21 @@
-import { useState, useRef, useCallback } from 'react'
+import { useState, useCallback } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import Form, { Item, Label, ButtonItem, ButtonOptions, RequiredRule, CustomRule } from 'devextreme-react/form'
-import LoadIndicator from 'devextreme-react/load-indicator'
-import notify from 'devextreme/ui/notify'
-import { ValidationCallbackData } from 'devextreme-react/common'
 import { changePassword } from '../../services'
 
 export const ChangePasswordForm = (): JSX.Element => {
     const navigate = useNavigate()
     const [loading, setLoading] = useState(false)
-    const formData = useRef({ password: '' })
+    const [password, setPassword] = useState('')
+    const [confirmPassword, setConfirmPassword] = useState('')
     const { recoveryCode } = useParams()
 
     const onSubmit = useCallback(
-        async (e: any) => {
+        async (e: React.FormEvent) => {
             e.preventDefault()
-            const { password } = formData.current
+            if (password !== confirmPassword) {
+                alert('Passwords do not match')
+                return
+            }
             setLoading(true)
 
             const result = await changePassword(password, recoveryCode!)
@@ -24,37 +24,33 @@ export const ChangePasswordForm = (): JSX.Element => {
             if (result.isOk) {
                 navigate('/login')
             } else {
-                notify(result.message, 'error', 2000)
+                alert(result.message)
             }
         },
-        [navigate, recoveryCode]
+        [navigate, recoveryCode, password, confirmPassword]
     )
 
-    const confirmPassword = useCallback(({ value }: ValidationCallbackData) => value === formData.current.password, [])
-
     return (
-        <form onSubmit={onSubmit}>
-            <Form formData={formData.current} disabled={loading}>
-                <Item dataField={'password'} editorType={'dxTextBox'} editorOptions={passwordEditorOptions}>
-                    <RequiredRule message="Password is required" />
-                    <Label visible={false} />
-                </Item>
-                <Item dataField={'confirmedPassword'} editorType={'dxTextBox'} editorOptions={confirmedPasswordEditorOptions}>
-                    <RequiredRule message="Password is required" />
-                    <CustomRule message={'Passwords do not match'} validationCallback={confirmPassword} />
-                    <Label visible={false} />
-                </Item>
-                <ButtonItem>
-                    <ButtonOptions width={'100%'} type={'default'} useSubmitBehavior={true}>
-                        <span className="dx-button-text">
-                            {loading ? <LoadIndicator width={'24px'} height={'24px'} visible={true} /> : 'Continue'}
-                        </span>
-                    </ButtonOptions>
-                </ButtonItem>
-            </Form>
+        <form onSubmit={onSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <input 
+                type="password" 
+                placeholder="Password" 
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                style={{ padding: '0.5rem' }}
+                required 
+            />
+            <input 
+                type="password" 
+                placeholder="Confirm Password" 
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                style={{ padding: '0.5rem' }}
+                required 
+            />
+            <button type="submit" disabled={loading} style={{ padding: '0.5rem' }}>
+                {loading ? 'Cargando...' : 'Continue'}
+            </button>
         </form>
     )
 }
-
-const passwordEditorOptions = { stylingMode: 'filled', placeholder: 'Password', mode: 'password' }
-const confirmedPasswordEditorOptions = { stylingMode: 'filled', placeholder: 'Confirm Password', mode: 'password' }

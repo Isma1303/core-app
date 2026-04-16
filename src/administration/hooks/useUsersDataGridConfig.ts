@@ -1,22 +1,19 @@
 /* eslint-disable indent */
 /* eslint-disable no-prototype-builtins */
-import CustomStore from 'devextreme/data/custom_store'
-import { DataService, ScpGridConfig } from '../../shared/interfaces'
+import { DataService } from '../../shared/interfaces'
 import { useAuthStore } from '../../auth'
 import { User } from '../interfaces'
-import { DataGridRef } from 'devextreme-react/cjs/data-grid'
-import notify from 'devextreme/ui/notify'
 import { useState } from 'react'
 
-export const useUsersDataGridConfig = (tablesService: DataService<User>, datagrid: React.RefObject<DataGridRef<any, any>>) => {
+export const useUsersDataGridConfig = (tablesService: DataService<User>, datagrid: React.RefObject<any>) => {
     const userInfo = useAuthStore((state) => state.userInfo)
 
     const [userData, setUserData] = useState<User | null>(null)
     const [showPasswordChangeForm, setShowPasswordChangeForm] = useState<boolean>(false)
     const [showUserForm, setShowUserForm] = useState<boolean>(false)
 
-    const obtenerConfig = async (dataSource: CustomStore): Promise<ScpGridConfig> => {
-        const config: ScpGridConfig = {
+    const obtenerConfig = async (dataSource: any): Promise<any> => {
+        const config: any = {
             dataSource: dataSource,
             dataId: 'user_id',
             columns: [
@@ -126,7 +123,7 @@ export const useUsersDataGridConfig = (tablesService: DataService<User>, datagri
                 setShowPasswordChangeForm(false)
                 const selectedRows: any[] | undefined = await datagrid.current?.instance().getSelectedRowsData()
                 if (selectedRows && selectedRows.length === 0)
-                    return notify('Debe seleccionar un registro / solo puede seleccionar 1 registro', 'info', 3000)
+                    return alert('Debe seleccionar un registro / solo puede seleccionar 1 registro')
 
                 if (selectedRows && selectedRows.length > 1) {
                     const selectedKeys: any[] | undefined = await datagrid.current?.instance().getSelectedRowKeys()
@@ -159,11 +156,11 @@ export const useUsersDataGridConfig = (tablesService: DataService<User>, datagri
             return
         }
 
-        notify('Debe seleccionar un registro', 'info', 3500)
+        alert('Debe seleccionar un registro')
     }
 
     const onRowAffected = (rowAffected: boolean) => {
-        if (rowAffected) notify('Registro actualizado con éxito', 'success', 3500)
+        if (rowAffected) alert('Registro actualizado con éxito')
 
         setShowPasswordChangeForm(false)
         setShowUserForm(false)

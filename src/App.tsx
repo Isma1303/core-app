@@ -1,12 +1,5 @@
-import 'devextreme/dist/css/dx.common.css'
-import './themes/generated/theme.base.css'
-import './themes/generated/theme.additional.css'
-
-import './dx-styles.scss'
-import esMessages from 'devextreme/localization/messages/es.json'
-import { locale, loadMessages } from 'devextreme/localization'
 import { useScreenSizeClass } from './shared/utils/media-query'
-
+import './app.css'
 import { Content } from './Content'
 import { UnauthenticatedContent } from './auth/pages/UnauthenticatedContent'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
@@ -18,7 +11,7 @@ import { SuspenseFallback } from './shared/components'
 const App = () => {
     const user = useAuthStore((state) => state.user)
     const loadSystemActionPermissions = useSystemActionPermissionsStore((state) => state.loadPermissions)
-
+8
     useEffect(() => {
         if (user) {
             loadSystemActionPermissions(user.user_id)
@@ -33,8 +26,6 @@ const App = () => {
 }
 
 export default function Root() {
-    loadMessages(esMessages)
-    locale('es-MX')
     const screenSizeClass = useScreenSizeClass()
 
     return (

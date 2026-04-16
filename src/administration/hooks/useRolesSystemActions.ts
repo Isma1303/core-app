@@ -3,22 +3,17 @@
 import { Dispatch, useState } from 'react'
 import { SystemActionsToRolesService } from '../services'
 import { SystemAction } from '../interfaces'
-import { SwitchTypes } from 'devextreme-react/switch'
-import { SelectBoxTypes } from 'devextreme-react/select-box'
-import { ButtonTypes } from 'devextreme-react/button'
-import { confirm } from 'devextreme/ui/dialog'
-import notify from 'devextreme/ui/notify'
 
 interface UseRolesSystemActions {
     systemActions: SystemAction[]
     selectedRoleId: number
     isLoadingData: boolean
     systemActionName: string
-    onRoleChanged: (event: SelectBoxTypes.ValueChangedEvent) => Promise<void>
+    onRoleChanged: (event: any) => Promise<void>
     setSystemActionName: Dispatch<React.SetStateAction<string>>
-    valueSwitchChanged: (event: SwitchTypes.ValueChangedEvent, data: SystemAction) => void
+    valueSwitchChanged: (event: any, data: SystemAction) => void
     loadSystemActionsData: (roleId: number, systemActionName?: string) => Promise<void>
-    onSubmitChanges: (event: ButtonTypes.ClickEvent) => Promise<void>
+    onSubmitChanges: (event: any) => Promise<void>
     changeSelectionAll: (assignedValue: boolean) => Promise<void>
 }
 
@@ -30,7 +25,7 @@ export const useRolesSystemActions = (): UseRolesSystemActions => {
     const [isLoadingData, setIsLoadingData] = useState<boolean>(false)
     const [systemActionName, setSystemActionName] = useState<string>('')
 
-    const valueSwitchChanged = (event: SwitchTypes.ValueChangedEvent, data: SystemAction) => {
+    const valueSwitchChanged = (event: any, data: SystemAction) => {
         setSystemActions((prev) => {
             const newActions = prev.map((action) => {
                 if (action.system_action_id === data.system_action_id) {
@@ -43,7 +38,7 @@ export const useRolesSystemActions = (): UseRolesSystemActions => {
         })
     }
 
-    const onRoleChanged = async (event: SelectBoxTypes.ValueChangedEvent) => {
+    const onRoleChanged = async (event: any) => {
         if (event.value === null) {
             setSystemActions([])
             setSelectedRoleId(0)
@@ -70,8 +65,8 @@ export const useRolesSystemActions = (): UseRolesSystemActions => {
         setIsLoadingData(false)
     }
 
-    const onSubmitChanges = async (event: ButtonTypes.ClickEvent): Promise<void> => {
-        const userConfirm = await confirm('¿Desea guardar los cambios realizados?', 'Confirmar cambios')
+    const onSubmitChanges = async (event: any): Promise<void> => {
+        const userConfirm = window.confirm('¿Desea guardar los cambios realizados?')
         if (!userConfirm) return
 
         const assignedData = systemActions.filter((action) => action.assigned)
@@ -81,13 +76,13 @@ export const useRolesSystemActions = (): UseRolesSystemActions => {
         })
 
         if (assignedResponse) {
-            notify('Cambios guardados correctamente', 'success', 3000)
+            alert('Cambios guardados correctamente')
         }
         await loadSystemActionsData(selectedRoleId, systemActionName)
     }
 
     const changeSelectionAll = async (assignedValue: boolean): Promise<void> => {
-        const userConfirm = await confirm('¿Desea cambiar la selección de todas las acciones?', 'Confirmar cambios')
+        const userConfirm = window.confirm('¿Desea cambiar la selección de todas las acciones?')
         if (!userConfirm) return
         setIsLoadingData(true)
         setSystemActions((prev) => prev.map((action) => ({ ...action, assigned: assignedValue })))
