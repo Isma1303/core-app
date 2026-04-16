@@ -1,5 +1,5 @@
-@import '../../../dx-styles.scss';
-@import '../../../themes/generated/variables.additional.scss';
+
+
 
 .side-navigation-menu {
     display: flex;
@@ -25,7 +25,7 @@
                 display: flex;
                 flex-direction: row-reverse;
                 .dx-icon {
-                    width: $side-panel-min-width !important;
+                    width: 30px !important;
                     margin: 0 !important;
                 }
             }
@@ -51,7 +51,7 @@
             .dx-treeview-node {
                 &[aria-level='1'] {
                     font-weight: bold;
-                    border-bottom: 1px solid $base-border-color;
+                    border-bottom: 1px solid black;
                 }
 
                 &[aria-level='2'] .dx-treeview-item-content {
@@ -80,7 +80,7 @@
                     }
 
                     &:not(.dx-state-focused) > .dx-treeview-item.dx-state-hover {
-                        background-color: lighten($base-bg, 4);
+                        background-color: lighten(white, 4);
                     }
                 }
             }

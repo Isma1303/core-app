@@ -6,9 +6,22 @@ import { Footer } from './shared/components'
 import { useAuthStore } from './auth'
 
 export const Content = (): JSX.Element => {
-    const version = useAuthStore((state) => state.sessionInfo?.appVersion)
     return (
-        <>
-        </>
+        <SideNavOuterToolbar title={appInfo.title}>
+            <Routes>
+                {routes.map(({ path, element: Element }) => (
+                    <Route
+                        key={path}
+                        path={path}
+                        element={<Element />}
+                    />
+                ))}
+                <Route
+                    path='*'
+                    element={<Navigate to='/home' />}
+                />
+            </Routes>
+            <Footer />
+        </SideNavOuterToolbar>
     )
 }

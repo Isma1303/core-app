@@ -1,58 +1,91 @@
 import React, { useEffect, useRef, useMemo } from 'react'
-import { useScreenSize } from '../../utils/media-query'
+import { Home, List, User, Settings, CheckSquare, Layout, ChevronRight, HelpCircle } from 'lucide-react'
+import { cn } from '@/lib/utils'
 import './SideNavigationMenu.scss'
 import type { SideNavigationMenuProps } from '../../../types'
 import { useNavigationStore } from '../../stores'
 
+const iconMap: Record<string, React.ReactNode> = {
+    home: <Home className="w-5 h-5" />,
+    tasks: <CheckSquare className="w-5 h-5" />,
+    profile: <User className="w-5 h-5" />,
+    settings: <Settings className="w-5 h-5" />,
+    administration: <Layout className="w-5 h-5" />,
+}
+
+const getIcon = (iconName?: string) => {
+    if (!iconName) return <List className="w-5 h-5" />
+    return iconMap[iconName.toLowerCase()] || <List className="w-5 h-5" />
+}
+
 export const SideNavigationMenu = (props: React.PropsWithChildren<SideNavigationMenuProps>) => {
     const { children, selectedItemChanged, openMenu, compactMode } = props
-
-    const { isLarge } = useScreenSize()
-
     const navigation = useNavigationStore((state) => state.navigation)
     const loadNavigation = useNavigationStore((state) => state.loadNavigation)
     const isLoadingPaths = useNavigationStore((state) => state.isLoadingPaths)
 
     useEffect(() => {
         loadNavigation()
-    }, [])
+    }, [loadNavigation])
 
-    function normalizePath() {
-        return navigation.map((item) => ({ ...item, expanded: isLarge, path: item.path && !/^\//.test(item.path) ? `/${item.path}` : item.path }))
-    }
-
-    const items = useMemo(
-        normalizePath,
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        [navigation]
-    )
-
-    const wrapperRef = useRef<HTMLDivElement>(null)
+    const items = useMemo(() => {
+        return navigation.map((item) => ({
+            ...item,
+            path: item.path && !/^\//.test(item.path) ? `/${item.path}` : item.path
+        }))
+    }, [navigation])
 
     return (
         <div 
-            className={'side-navigation-menu'} 
-            ref={wrapperRef}
-            onClick={(e) => openMenu(e as any)}
+            className={cn(
+                "flex flex-col h-full bg-card border-r border-border transition-all duration-300",
+                compactMode ? "w-16" : "w-64"
+            )}
+            onMouseEnter={openMenu}
         >
             {children}
-            <div className={'menu-container'}>
+            <div className="flex-1 px-3 py-4 overflow-y-auto">
                 {isLoadingPaths ? (
-                    <div>Cargando...</div>
+                    <div className="flex items-center justify-center h-20">
+                        <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                    </div>
                 ) : (
-                    <ul style={{ listStyle: 'none', padding: 0 }}>
+                    <nav className="space-y-1">
                         {items.map((item: any) => (
-                            <li 
-                                key={item.opcion_menu_id} 
+                            <button
+                                key={item.opcion_menu_id}
                                 onClick={() => selectedItemChanged({ itemData: item } as any)}
-                                style={{ cursor: 'pointer', padding: '8px' }}
+                                className={cn(
+                                    "flex items-center w-full gap-3 px-3 py-2 transition-all rounded-md group hover:bg-accent hover:text-accent-foreground text-muted-foreground",
+                                    compactMode ? "justify-center" : "justify-start"
+                                )}
+                                title={compactMode ? (item.text || item.text_key) : ""}
                             >
-                                {item.text || item.text_key}
-                            </li>
+                                <span className="flex-shrink-0">
+                                    {getIcon(item.icon)}
+                                </span>
+                                {!compactMode && (
+                                    <span className="text-sm font-medium truncate">
+                                        {item.text || item.text_key}
+                                    </span>
+                                )}
+                                {!compactMode && item.items && item.items.length > 0 && (
+                                    <ChevronRight className="w-4 h-4 ml-auto opacity-50 group-hover:opacity-100" />
+                                )}
+                            </button>
                         ))}
-                    </ul>
+                    </nav>
                 )}
             </div>
+            
+            {!compactMode && (
+                <div className="p-4 mt-auto border-t border-border">
+                    <button className="flex items-center w-full gap-3 px-3 py-2 text-sm font-medium transition-all rounded-md text-muted-foreground hover:bg-accent hover:text-accent-foreground">
+                        <HelpCircle className="w-5 h-5" />
+                        <span>Support</span>
+                    </button>
+                </div>
+            )}
         </div>
     )
 }

@@ -1,5 +1,5 @@
 import { useScreenSizeClass } from './shared/utils/media-query'
-import './app.css'
+import './App.css'
 import { Content } from './Content'
 import { UnauthenticatedContent } from './auth/pages/UnauthenticatedContent'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router'
 import { Header, SideNavigationMenu, Footer } from '../../components'
 import './side-nav-outer-toolbar.scss'
 import { useScreenSize } from '../../utils/media-query'
+import { cn } from '@/lib/utils'
 
 export const SideNavOuterToolbar = ({ title, children }: { title: string; children: JSX.Element[] }): JSX.Element => {
     const scrollViewRef = useRef<HTMLDivElement>(null)
@@ -16,8 +17,10 @@ export const SideNavOuterToolbar = ({ title, children }: { title: string; childr
     }, [])
 
     const temporaryOpenMenu = useCallback(() => {
-        setMenuStatus((prevMenuStatus) => (prevMenuStatus === MenuStatus.Closed ? MenuStatus.TemporaryOpened : prevMenuStatus))
-    }, [])
+        if (menuStatus === MenuStatus.Closed) {
+            setMenuStatus(MenuStatus.TemporaryOpened)
+        }
+    }, [menuStatus])
 
     const onNavigationChanged = useCallback(
         ({ itemData, event }: any) => {
@@ -39,16 +42,15 @@ export const SideNavOuterToolbar = ({ title, children }: { title: string; childr
     const isOpened = menuStatus !== MenuStatus.Closed
 
     return (
-        <div className={'side-nav-outer-toolbar'} style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
+        <div className="flex flex-col h-screen overflow-hidden bg-background">
             <Header menuToggleEnabled toggleMenu={toggleMenu} image="logo_inicio.png" title={title} />
-            <div className={'layout-body'} style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
+            
+            <div className="flex flex-1 overflow-hidden">
                 <aside 
-                    style={{ 
-                        width: isOpened ? '250px' : '60px', 
-                        transition: 'width 0.3s', 
-                        background: '#f4f4f4',
-                        overflowX: 'hidden'
-                    }}
+                    className={cn(
+                        "z-30 transition-all duration-300 ease-in-out",
+                        isOpened ? "w-64" : "w-16"
+                    )}
                 >
                     <SideNavigationMenu
                         compactMode={!isOpened}
@@ -56,22 +58,24 @@ export const SideNavOuterToolbar = ({ title, children }: { title: string; childr
                         openMenu={temporaryOpenMenu}
                     />
                 </aside>
-                <div 
-                    className={'container-fluid'} 
-                    style={{ flex: 1, overflowY: 'auto', padding: '1rem' }}
+
+                <main 
+                    className="flex-1 overflow-y-auto"
                     ref={scrollViewRef}
                 >
-                    <div className={'content'}>
-                        {React.Children.map(children, (item) => {
-                            return item.type !== Footer && item
-                        })}
+                    <div className="p-6 max-w-7xl mx-auto space-y-6">
+                        <div className="content">
+                            {React.Children.map(children, (item) => {
+                                return item.type !== Footer && item
+                            })}
+                        </div>
+                        <div className="content-block py-8">
+                            {React.Children.map(children, (item) => {
+                                return item.type === Footer && item
+                            })}
+                        </div>
                     </div>
-                    <div className={'content-block'}>
-                        {React.Children.map(children, (item) => {
-                            return item.type === Footer && item
-                        })}
-                    </div>
-                </div>
+                </main>
             </div>
         </div>
     )
