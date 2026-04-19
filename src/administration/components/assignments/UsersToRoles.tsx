@@ -15,38 +15,21 @@ export const UsersToRoles = () => {
     }
 
     return (
-        <div className="row mx-0 mx-md-3 mt-4">
-            <div className="row mx-4">
-                <div className="col-md-6 px-0">
-                    <div className="row">
-                        <h6>Lista de Usuarios</h6>
-                    </div>
-                    <div className="row">
-                        <select 
-                            value={userId} 
-                            onChange={handleUserChange}
-                            style={{ width: '250px', padding: '0.5rem' }}
-                        >
-                            <option value={0}>Seleccionar Usuario</option>
-                            {/* In a real app, users would be mapped here */}
-                        </select>
-                    </div>
-                </div>
+        <div className="grid gap-4 md:grid-cols-2">
+            <div className="space-y-2 rounded-xl border border-border bg-card p-4">
+                <h6 className="text-sm font-semibold text-muted-foreground">Lista de Usuarios</h6>
+                <select value={userId} onChange={handleUserChange} className="form-select">
+                    <option value={0}>Seleccionar Usuario</option>
+                </select>
             </div>
-            <div className="col-md-6 mt-2">
-                <p className="mx-3">
-                    <b>Roles</b>
-                </p>
-                <div style={{ border: '1px solid #ccc', padding: '1rem' }}>
-                    <p>Grid de Roles eliminado.</p>
-                </div>
+            <div className="rounded-xl border border-border bg-card p-4">
+                <p className="mb-2 text-sm font-semibold text-muted-foreground">Roles</p>
+                <div className="rounded-lg border border-border bg-muted/40 p-4 text-sm text-muted-foreground">Grid de Roles eliminado.</div>
             </div>
-            <div className="col-md-6">
-                <p className="mx-3 mt-2">
-                    <b>Usuarios del Rol</b>
-                </p>
-                <div className="mt-2" style={{ border: '1px solid #ccc', padding: '1rem' }}>
-                    <p>Grid de Usuarios del Rol eliminado.</p>
+            <div className="rounded-xl border border-border bg-card p-4 md:col-span-2">
+                <p className="mb-2 text-sm font-semibold text-muted-foreground">Usuarios del Rol</p>
+                <div className="rounded-lg border border-border bg-muted/40 p-4 text-sm text-muted-foreground">
+                    Grid de Usuarios del Rol eliminado.
                 </div>
             </div>
         </div>

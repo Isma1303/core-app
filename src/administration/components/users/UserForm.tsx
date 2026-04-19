@@ -1,5 +1,7 @@
 import { User } from '../../interfaces'
 import { useState } from 'react'
+import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
 
 interface Props {
     user: User
@@ -20,68 +22,63 @@ export const UserForm = (props: Props & EventsProps): JSX.Element => {
     }
 
     return (
-        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            <div>
-                <label>Usuario</label>
-                <input 
-                    type="text" 
-                    value={formData.user || ''} 
-                    onChange={(e) => setFormData({ ...formData, user: e.target.value })} 
-                    style={{ width: '100%', padding: '0.5rem' }} 
-                    required 
+        <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-2">
+                <label className="text-sm font-medium">Usuario</label>
+                <Input
+                    type="text"
+                    value={formData.user || ''}
+                    onChange={(e) => setFormData({ ...formData, user: e.target.value })}
+                    className="h-10"
+                    required
                 />
             </div>
-            <div>
-                <label>Nombre</label>
-                <input 
-                    type="text" 
-                    value={formData.name || ''} 
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })} 
-                    style={{ width: '100%', padding: '0.5rem' }} 
-                    required 
+            <div className="space-y-2">
+                <label className="text-sm font-medium">Nombre</label>
+                <Input
+                    type="text"
+                    value={formData.name || ''}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    className="h-10"
+                    required
                 />
             </div>
-            <div>
-                <label>Correo Electrónico</label>
-                <input 
-                    type="email" 
-                    value={formData.email || ''} 
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })} 
-                    style={{ width: '100%', padding: '0.5rem' }} 
-                    required 
+            <div className="space-y-2">
+                <label className="text-sm font-medium">Correo Electrónico</label>
+                <Input
+                    type="email"
+                    value={formData.email || ''}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    className="h-10"
+                    required
                 />
             </div>
             {!props.user.user_id && (
                 <>
-                    <div>
-                        <label>Contraseña</label>
-                        <input 
-                            type="password" 
-                            onChange={(e) => setFormData({ ...formData, password: e.target.value })} 
-                            style={{ width: '100%', padding: '0.5rem' }} 
-                            required 
-                        />
+                    <div className="space-y-2">
+                        <label className="text-sm font-medium">Contraseña</label>
+                        <Input type="password" onChange={(e) => setFormData({ ...formData, password: e.target.value })} className="h-10" required />
                     </div>
-                    <div>
-                        <label>Confirmar Contraseña</label>
-                        <input 
-                            type="password" 
-                            style={{ width: '100%', padding: '0.5rem' }} 
-                            required 
-                        />
+                    <div className="space-y-2">
+                        <label className="text-sm font-medium">Confirmar Contraseña</label>
+                        <Input type="password" className="h-10" required />
                     </div>
                 </>
             )}
-            <div>
-                <label>
-                    <input 
-                        type="checkbox" 
-                        checked={formData.status !== false} 
-                        onChange={(e) => setFormData({ ...formData, status: e.target.checked })} 
-                    /> ¿Activo?
+            <div className="rounded-lg border border-border bg-muted/40 p-3">
+                <label className="inline-flex items-center gap-2 text-sm">
+                    <input
+                        type="checkbox"
+                        checked={formData.status !== false}
+                        onChange={(e) => setFormData({ ...formData, status: e.target.checked })}
+                        className="h-4 w-4"
+                    />{' '}
+                    ¿Activo?
                 </label>
             </div>
-            <button type="submit" style={{ padding: '0.5rem 1rem' }}>Guardar</button>
+            <Button type="submit" className="h-10">
+                Guardar
+            </Button>
         </form>
     )
 }

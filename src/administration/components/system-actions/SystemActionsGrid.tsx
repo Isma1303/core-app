@@ -1,29 +1,34 @@
 import { useEffect, useState } from 'react'
 import { SystemAction } from '../../interfaces'
 import { SystemActionsService } from '../../services'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { Box } from 'lucide-react'
 
 const systemActionsService = new SystemActionsService()
 export const SystemActionsGrid = (): JSX.Element => {
     return (
-        <div style={{ width: '100%' }}>
+        <div className="w-full space-y-3">
             <h2 className="content-block">Acciones del Sistema</h2>
-            <div className="dx-card" style={{ padding: '1rem' }}>
-                <p>Grid de Acciones del Sistema eliminado. Listo para shadcn/ui.</p>
-                <table style={{ width: '100%', borderCollapse: 'collapse', border: '1px solid #ccc' }}>
-                    <thead>
-                        <tr style={{ background: '#eee' }}>
-                            <th style={{ padding: '8px', textAlign: 'left' }}>Acción</th>
-                            <th style={{ padding: '8px', textAlign: 'left' }}>Descripción</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td colSpan={2} style={{ textAlign: 'center', padding: '2rem' }}>
-                                Tabla de Acciones - Pendiente migración
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+            <div className="dx-card p-4">
+                <p className="mb-3 text-sm text-muted-foreground">Grid de Acciones del Sistema eliminado. Listo para shadcn/ui.</p>
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead>Acción</TableHead>
+                            <TableHead>Descripción</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        <TableRow>
+                            <TableCell colSpan={2} className="py-10 text-center text-muted-foreground">
+                                <div className="mx-auto flex w-fit items-center gap-2 rounded-lg border border-border bg-muted/40 px-4 py-2">
+                                    <Box className="h-4 w-4" />
+                                    Tabla de Acciones - Pendiente migración
+                                </div>
+                            </TableCell>
+                        </TableRow>
+                    </TableBody>
+                </Table>
             </div>
         </div>
     )

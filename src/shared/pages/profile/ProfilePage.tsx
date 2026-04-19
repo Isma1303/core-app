@@ -53,20 +53,25 @@ export const ProfilePage = (): JSX.Element => {
         }
     }
 
+    const validateActualPassword = async (currentPassword: string): Promise<boolean> => {
+        if (!user.user_id) return false
+
+        const persistedUser = await userService.getRecord(user.user_id)
+        const encodedPassword = btoa(currentPassword || '')
+
+        return persistedUser?.password === encodedPassword
+    }
+
     return (
         <div className="max-w-5xl mx-auto space-y-8 animate-in fade-in duration-500">
             <div className="flex flex-col items-center justify-center p-8 bg-card border rounded-xl border-border shadow-sm">
                 <div className="relative w-32 h-32 mb-4 overflow-hidden rounded-full ring-4 ring-background shadow-lg">
-                    <img 
-                        alt={user.name || 'Profile'} 
-                        src={user.profile_picture || './assets/avatar.jpg'} 
-                        className="object-cover w-full h-full"
-                    />
+                    <img alt={user.name || 'Profile'} src={user.profile_picture || './assets/avatar.jpg'} className="object-cover w-full h-full" />
                 </div>
                 <h2 className="text-3xl font-semibold tracking-tight">{user.name || 'Usuario'}</h2>
                 <p className="text-muted-foreground mt-1">{user.email || 'Cargando información...'}</p>
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {/* User Information Form */}
                 <div className="p-6 bg-card border rounded-xl border-border shadow-sm">
@@ -75,40 +80,40 @@ export const ProfilePage = (): JSX.Element => {
                             <h3 className="text-xl font-semibold tracking-tight">Información de Usuario</h3>
                             <p className="text-sm text-muted-foreground">Gestiona tu información personal.</p>
                         </div>
-                        
+
                         <div className="space-y-4">
                             <div className="space-y-2">
                                 <label className="text-sm font-medium leading-none text-foreground">Usuario</label>
-                                <input 
+                                <input
                                     className="flex w-full h-10 px-3 py-2 text-sm bg-muted/50 border rounded-md border-input placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
-                                    type="text" 
-                                    value={user.user || ''} 
-                                    disabled 
+                                    type="text"
+                                    value={user.user || ''}
+                                    disabled
                                 />
                             </div>
                             <div className="space-y-2">
                                 <label className="text-sm font-medium leading-none text-foreground">Correo Electrónico</label>
-                                <input 
+                                <input
                                     className="flex w-full h-10 px-3 py-2 text-sm bg-transparent border rounded-md border-input placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                                    type="email" 
-                                    value={user.email || ''} 
-                                    onChange={(e) => setUser({ ...user, email: e.target.value })} 
-                                    required 
+                                    type="email"
+                                    value={user.email || ''}
+                                    onChange={(e) => setUser({ ...user, email: e.target.value })}
+                                    required
                                 />
                             </div>
                             <div className="space-y-2">
                                 <label className="text-sm font-medium leading-none text-foreground">Nombre</label>
-                                <input 
+                                <input
                                     className="flex w-full h-10 px-3 py-2 text-sm bg-transparent border rounded-md border-input placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                                    type="text" 
-                                    value={user.name || ''} 
-                                    onChange={(e) => setUser({ ...user, name: e.target.value })} 
-                                    required 
+                                    type="text"
+                                    value={user.name || ''}
+                                    onChange={(e) => setUser({ ...user, name: e.target.value })}
+                                    required
                                 />
                             </div>
                         </div>
-                        <button 
-                            type="submit" 
+                        <button
+                            type="submit"
                             className="inline-flex items-center justify-center w-full h-10 px-4 py-2 text-sm font-medium transition-colors rounded-md bg-primary text-primary-foreground hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                         >
                             Guardar Cambios
@@ -123,53 +128,56 @@ export const ProfilePage = (): JSX.Element => {
                             <h3 className="text-xl font-semibold tracking-tight">Seguridad</h3>
                             <p className="text-sm text-muted-foreground">Actualiza y protege tu contraseña.</p>
                         </div>
-                        
+
                         <div className="space-y-4">
                             <div className="space-y-2">
                                 <label className="text-sm font-medium leading-none text-foreground">Contraseña Actual</label>
-                                <input 
+                                <input
                                     className="flex w-full h-10 px-3 py-2 text-sm bg-transparent border rounded-md border-input placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                                    type={passwordType} 
-                                    onChange={(e) => (passwordData.currentPassword = e.target.value)} 
-                                    required 
+                                    type={passwordType}
+                                    onChange={(e) => (passwordData.currentPassword = e.target.value)}
+                                    required
                                 />
                             </div>
                             <div className="space-y-2">
                                 <label className="text-sm font-medium leading-none text-foreground">Nueva Contraseña</label>
-                                <input 
+                                <input
                                     className="flex w-full h-10 px-3 py-2 text-sm bg-transparent border rounded-md border-input placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                                    type={passwordType} 
-                                    onChange={(e) => (passwordData.password = e.target.value)} 
-                                    required 
+                                    type={passwordType}
+                                    onChange={(e) => (passwordData.password = e.target.value)}
+                                    required
                                 />
                             </div>
                             <div className="space-y-2">
                                 <label className="text-sm font-medium leading-none text-foreground">Confirmar Contraseña</label>
-                                <input 
+                                <input
                                     className="flex w-full h-10 px-3 py-2 text-sm bg-transparent border rounded-md border-input placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                                    type={passwordType} 
-                                    onChange={(e) => (passwordData.confirmPassword = e.target.value)} 
-                                    required 
+                                    type={passwordType}
+                                    onChange={(e) => (passwordData.confirmPassword = e.target.value)}
+                                    required
                                 />
                             </div>
                             <div className="flex items-center space-x-2 pt-2">
-                                <input 
-                                    type="checkbox" 
+                                <input
+                                    type="checkbox"
                                     id="showPassword"
                                     className="w-4 h-4 rounded border-primary text-primary focus:ring-primary focus:ring-2"
-                                    checked={showPasswordValue} 
+                                    checked={showPasswordValue}
                                     onChange={(e) => {
                                         setShowPasswordValue(e.target.checked)
                                         setPasswordType(e.target.checked ? 'text' : 'password')
-                                    }} 
+                                    }}
                                 />
-                                <label htmlFor="showPassword" className="text-sm font-medium leading-none cursor-pointer text-muted-foreground hover:text-foreground transition-colors">
+                                <label
+                                    htmlFor="showPassword"
+                                    className="text-sm font-medium leading-none cursor-pointer text-muted-foreground hover:text-foreground transition-colors"
+                                >
                                     Mostrar Contraseñas
                                 </label>
                             </div>
                         </div>
-                        <button 
-                            type="submit" 
+                        <button
+                            type="submit"
                             className="inline-flex items-center justify-center w-full h-10 px-4 py-2 text-sm font-medium transition-colors rounded-md border border-input bg-background hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                         >
                             Actualizar Contraseña

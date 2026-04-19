@@ -36,7 +36,7 @@ export const SideNavOuterToolbar = ({ title, children }: { title: string; childr
                 if (event) event.stopPropagation()
             }
         },
-        [navigate, menuStatus, isLarge]
+        [navigate, menuStatus, isLarge],
     )
 
     const isOpened = menuStatus !== MenuStatus.Closed
@@ -44,32 +44,20 @@ export const SideNavOuterToolbar = ({ title, children }: { title: string; childr
     return (
         <div className="flex flex-col h-screen overflow-hidden bg-background">
             <Header menuToggleEnabled toggleMenu={toggleMenu} image="logo_inicio.png" title={title} />
-            
+
             <div className="flex flex-1 overflow-hidden">
-                <aside 
-                    className={cn(
-                        "z-30 transition-all duration-300 ease-in-out",
-                        isOpened ? "w-64" : "w-16"
-                    )}
-                >
-                    <SideNavigationMenu
-                        compactMode={!isOpened}
-                        selectedItemChanged={onNavigationChanged}
-                        openMenu={temporaryOpenMenu}
-                    />
+                <aside className={cn('z-30 transition-all duration-300 ease-in-out', isOpened ? 'w-60' : 'w-16')}>
+                    <SideNavigationMenu compactMode={!isOpened} selectedItemChanged={onNavigationChanged} openMenu={temporaryOpenMenu} />
                 </aside>
 
-                <main 
-                    className="flex-1 overflow-y-auto"
-                    ref={scrollViewRef}
-                >
-                    <div className="p-6 max-w-7xl mx-auto space-y-6">
+                <main className="flex-1 overflow-y-auto" ref={scrollViewRef}>
+                    <div className="mx-auto max-w-6xl space-y-5 p-5">
                         <div className="content">
                             {React.Children.map(children, (item) => {
                                 return item.type !== Footer && item
                             })}
                         </div>
-                        <div className="content-block py-8">
+                        <div className="py-6">
                             {React.Children.map(children, (item) => {
                                 return item.type === Footer && item
                             })}

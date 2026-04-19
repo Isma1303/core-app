@@ -11,7 +11,7 @@ import { SuspenseFallback } from './shared/components'
 const App = () => {
     const user = useAuthStore((state) => state.user)
     const loadSystemActionPermissions = useSystemActionPermissionsStore((state) => state.loadPermissions)
-8
+
     useEffect(() => {
         if (user) {
             loadSystemActionPermissions(user.user_id)

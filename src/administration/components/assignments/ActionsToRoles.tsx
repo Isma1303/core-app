@@ -16,38 +16,21 @@ export const ActionsToRoles = (): JSX.Element => {
     }
 
     return (
-        <div className="row mx-0 mx-md-3 mt-4">
-            <div className="row mx-4">
-                <div className="col-md-6 px-0">
-                    <div className="row">
-                        <h6>Lista de Acciones</h6>
-                    </div>
-                    <div className="row">
-                        <select 
-                            value={actionId} 
-                            onChange={handleActionChange}
-                            style={{ width: '250px', padding: '0.5rem' }}
-                        >
-                            <option value={0}>Seleccionar Acción</option>
-                            {/* Actions would be mapped here */}
-                        </select>
-                    </div>
-                </div>
+        <div className="grid gap-4 md:grid-cols-2">
+            <div className="space-y-2 rounded-xl border border-border bg-card p-4">
+                <h6 className="text-sm font-semibold text-muted-foreground">Lista de Acciones</h6>
+                <select value={actionId} onChange={handleActionChange} className="form-select">
+                    <option value={0}>Seleccionar Acción</option>
+                </select>
             </div>
-            <div className="col-md-6 mt-2">
-                <p className="mx-3">
-                    <b>Roles</b>
-                </p>
-                <div style={{ border: '1px solid #ccc', padding: '1rem' }}>
-                    <p>Grid de Roles eliminado.</p>
-                </div>
+            <div className="rounded-xl border border-border bg-card p-4">
+                <p className="mb-2 text-sm font-semibold text-muted-foreground">Roles</p>
+                <div className="rounded-lg border border-border bg-muted/40 p-4 text-sm text-muted-foreground">Grid de Roles eliminado.</div>
             </div>
-            <div className="col-md-6">
-                <p className="mx-3 mt-2">
-                    <b>Acciones de Rol</b>
-                </p>
-                <div className="mt-2" style={{ border: '1px solid #ccc', padding: '1rem' }}>
-                    <p>Grid de Acciones de Rol eliminado.</p>
+            <div className="rounded-xl border border-border bg-card p-4 md:col-span-2">
+                <p className="mb-2 text-sm font-semibold text-muted-foreground">Acciones de Rol</p>
+                <div className="rounded-lg border border-border bg-muted/40 p-4 text-sm text-muted-foreground">
+                    Grid de Acciones de Rol eliminado.
                 </div>
             </div>
         </div>

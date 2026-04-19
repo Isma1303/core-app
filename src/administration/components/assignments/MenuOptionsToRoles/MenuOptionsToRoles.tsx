@@ -3,6 +3,8 @@ import { MenuOptionsService, MenuOptionsToRolesService } from '../../../services
 import { useState } from 'react'
 import { RoleService } from '../../../services/roles.service'
 import './MenuOptionsToRoles.scss'
+import { Button } from '@/components/ui/button'
+import { Save } from 'lucide-react'
 
 const menuOptionsService = new MenuOptionsService()
 const rolesService = new RoleService()
@@ -17,45 +19,27 @@ export const MenuOptionsToRoles = (): JSX.Element => {
     }
 
     return (
-        <div className="row mx-0 mx-md-3 mt-4">
-            <div className="row mx-4">
-                <div className="col-md-6 px-0">
-                    <div className="row">
-                        <h6>Lista de opciones de menú</h6>
-                    </div>
-                    <div className="row">
-                        <select 
-                            value={menuOptionId} 
-                            onChange={handleMenuOptionChange}
-                            style={{ width: '250px', padding: '0.5rem' }}
-                        >
-                            <option value={0}>Seleccionar Menú</option>
-                            {/* Menu options would be mapped here */}
-                        </select>
-                    </div>
-                </div>
+        <div className="grid gap-4 md:grid-cols-2">
+            <div className="space-y-2 rounded-xl border border-border bg-card p-4">
+                <h6 className="text-sm font-semibold text-muted-foreground">Lista de opciones de menú</h6>
+                <select value={menuOptionId} onChange={handleMenuOptionChange} className="form-select">
+                    <option value={0}>Seleccionar Menú</option>
+                </select>
             </div>
-            <div className="col-md-6 mt-2">
-                <p className="mx-3">
-                    <b>Roles</b>
-                </p>
-                <div style={{ border: '1px solid #ccc', padding: '1rem' }}>
-                    <p>Grid de Roles eliminado.</p>
-                </div>
+            <div className="rounded-xl border border-border bg-card p-4">
+                <p className="mb-2 text-sm font-semibold text-muted-foreground">Roles</p>
+                <div className="rounded-lg border border-border bg-muted/40 p-4 text-sm text-muted-foreground">Grid de Roles eliminado.</div>
             </div>
-            <div className="col-md-6">
-                <div className="row">
-                    <div className="col">
-                        <p className="mx-3 mt-2">
-                            <b>Opciones de menú de Rol</b>
-                        </p>
-                    </div>
-                    <div className="col">
-                        <button onClick={() => {}}>Guardar</button>
-                    </div>
+            <div className="rounded-xl border border-border bg-card p-4 md:col-span-2">
+                <div className="mb-2 flex items-center justify-between gap-2">
+                    <p className="text-sm font-semibold text-muted-foreground">Opciones de menú de Rol</p>
+                    <Button variant="outline" onClick={() => {}}>
+                        <Save className="h-4 w-4" />
+                        Guardar
+                    </Button>
                 </div>
-                <div className="mt-2" style={{ border: '1px solid #ccc', padding: '1rem' }}>
-                    <p>TreeView de Opciones de Menú eliminado.</p>
+                <div className="rounded-lg border border-border bg-muted/40 p-4 text-sm text-muted-foreground">
+                    TreeView de Opciones de Menú eliminado.
                 </div>
             </div>
         </div>

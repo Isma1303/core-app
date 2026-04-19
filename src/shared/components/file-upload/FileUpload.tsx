@@ -2,6 +2,8 @@
 /* eslint-disable no-unused-vars */
 import { DragEvent, forwardRef, useImperativeHandle, useRef, useState } from 'react'
 import './FileUpload.scss'
+import { Button } from '@/components/ui/button'
+import { CheckCircle2, UploadCloud } from 'lucide-react'
 
 interface Props {
     onFileProcessed: (file: File) => Promise<void>
@@ -94,7 +96,7 @@ export const FileUpload = forwardRef<FileUploadRef, Props>(({ onFileProcessed }:
 
     return (
         <div className="file-upload-component">
-            <div className="row mx-3 mb-2">
+            <div className="mb-2">
                 <div
                     className="drag-and-drop mt-2"
                     onDragOver={onDragOver}
@@ -102,28 +104,25 @@ export const FileUpload = forwardRef<FileUploadRef, Props>(({ onFileProcessed }:
                     onDrop={onDrop}
                     onClick={() => inputFile.current?.click()}
                 >
-                    <p>Arrastre el archivo aquí</p>
+                    <p className="text-sm text-muted-foreground">Arrastre el archivo aquí</p>
                     <input type="file" onChange={onFileSelected} accept=".xlsx" className="input-file" ref={inputFile} />
-                    <button type="button" className="btn">
+                    <Button type="button" variant="outline">
                         Seleccione el archivo
-                    </button>
-                    <div>{fileName === '' ? <i className="bi-cloud-upload-fill"></i> : <i className="bi bi-check-circle-fill"></i>}</div>
-                    {fileName !== '' && <p>{fileName}</p>}
+                    </Button>
+                    <div className="mt-2 text-foreground">
+                        {fileName === '' ? <UploadCloud className="mx-auto h-12 w-12" /> : <CheckCircle2 className="mx-auto h-12 w-12" />}
+                    </div>
+                    {fileName !== '' && <p className="mt-2 text-sm font-medium">{fileName}</p>}
                 </div>
             </div>
 
-            <div className="row mx-3">
-                <div className="col d-flex justify-content-end mt-3">
-                    <button
-                        className="btn btn-primary"
-                        disabled={!enableFinishButton}
-                        onClick={onProcessFile}
-                        style={{ height: '3em' }}
-                    >
+            <div className="mt-3 flex justify-end">
+                <div>
+                    <Button className="h-10" disabled={!enableFinishButton} onClick={onProcessFile}>
                         Procesar archivo
-                    </button>
+                    </Button>
                 </div>
             </div>
         </div>
     )
-}))
+})

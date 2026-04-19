@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react'
-import { customStoreBuilder } from '../../shared/builders/custom-store-builder.builder'
 import { useMenuOptionsDataGridConfig } from '../hooks'
 import { MenuOption } from '../interfaces'
 import { MenuOptionsService } from '../services'
-import { ScpGridConfig } from '../../shared/interfaces'
 import { ScpGrid } from '../../shared/components'
+import { ScpGridConfig } from '@/shared/interfaces/scp-grid-config.interface'
+import { customStoreBuilder } from '@/shared/builders/custom-store-builder.builder'
 
 export const MenuOptions = (): JSX.Element => {
     const menuOptionsService = new MenuOptionsService()

@@ -1,6 +1,8 @@
+import { ReactNode } from 'react'
+
 export interface ContentTab {
     id: number
     text: string
-    icon?: string
+    icon?: ReactNode
     content?: string
 }

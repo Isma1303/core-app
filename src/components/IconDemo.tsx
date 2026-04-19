@@ -1,30 +1,31 @@
-import React from 'react';
-import { User, Settings, Bell, CheckCircle, Info, AlertTriangle } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import React from 'react'
+import { User, Settings, Bell, CheckCircle, Info, AlertTriangle } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 
 export const IconDemo = () => {
     return (
-        <div className="container py-5">
-            <h1 className="mb-4 text-3xl font-bold">Integration Demo</h1>
-            
-            <div className="row mb-5">
-                <div className="col-md-6 mb-4">
-                    <div className="card shadow-sm border-0 bg-card text-card-foreground p-4 rounded-lg border">
-                        <div className="card-body">
-                            <h5 className="card-title flex items-center gap-2 font-semibold mb-3">
+        <div className="mx-auto max-w-6xl space-y-6 p-6">
+            <h1 className="text-3xl font-bold tracking-tight">Integration Demo</h1>
+
+            <div className="grid gap-4 md:grid-cols-2">
+                <div>
+                    <div className="card bg-card p-4 text-card-foreground">
+                        <div>
+                            <h5 className="mb-3 flex items-center gap-2 font-semibold">
                                 <User className="w-5 h-5 text-primary" />
                                 Bootstrap Card with Lucide
                             </h5>
-                            <p className="card-text text-muted-foreground mb-4">
-                                This card uses Bootstrap classes (<code className="bg-muted px-1 rounded">card</code>, <code className="bg-muted px-1 rounded">row</code>, <code className="bg-muted px-1 rounded">col</code>) 
-                                but is styled with Shadcn variables and uses Lucide Icons.
+                            <p className="mb-4 text-muted-foreground">
+                                This card uses Bootstrap classes (<code className="bg-muted px-1 rounded">card</code>,{' '}
+                                <code className="bg-muted px-1 rounded">row</code>, <code className="bg-muted px-1 rounded">col</code>) but is styled
+                                with Shadcn variables and uses Lucide Icons.
                             </p>
                             <div className="flex gap-2">
                                 <Button variant="default" className="flex items-center gap-2">
                                     <CheckCircle className="w-4 h-4" />
                                     Shadcn Button
                                 </Button>
-                                <button className="btn btn-outline-primary flex items-center gap-2">
+                                <button className="btn btn-outline-secondary flex items-center gap-2">
                                     <Settings className="w-4 h-4" />
                                     Bootstrap Button
                                 </button>
@@ -33,9 +34,9 @@ export const IconDemo = () => {
                     </div>
                 </div>
 
-                <div className="col-md-6">
+                <div>
                     <div className="p-4 rounded-lg border bg-accent/10 border-accent/20">
-                        <h5 className="flex items-center gap-2 font-semibold mb-3">
+                        <h5 className="mb-3 flex items-center gap-2 font-semibold">
                             <Bell className="w-5 h-5 text-accent" />
                             Notifications (Tailwind + Lucide)
                         </h5>
@@ -53,14 +54,14 @@ export const IconDemo = () => {
                 </div>
             </div>
 
-            <div className="alert alert-info d-flex align-items-center" role="alert">
-                <Info className="w-5 h-5 me-2" />
+            <div className="alert flex items-center gap-2" role="alert">
+                <Info className="h-5 w-5" />
                 <div>
                     This is a standard <strong>Bootstrap Alert</strong> enhanced with a <strong>Lucide Icon</strong>.
                 </div>
             </div>
         </div>
-    );
-};
+    )
+}
 
-export default IconDemo;
+export default IconDemo

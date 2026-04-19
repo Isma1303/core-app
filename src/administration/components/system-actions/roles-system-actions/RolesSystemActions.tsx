@@ -1,6 +1,9 @@
 import { RoleService } from '../../../services'
 import { useState } from 'react'
 import './rolesSystemActions.scss'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { AlertTriangle, Search, Save, CheckSquare, Square } from 'lucide-react'
 
 const rolesService = new RoleService()
 
@@ -19,76 +22,77 @@ export const RolesSystemActions = (): JSX.Element => {
     const loadSystemActionsData = (id: number, name?: string) => {}
 
     return (
-        <div className="container mt-4">
-            <div className="mb-3 row">
-                <div className="col">
-                    <label className="form-label">Seleccionar Rol:</label>
-                    <select 
-                        className="form-select"
-                        value={selectedRoleId}
-                        onChange={onRoleChanged}
-                    >
+        <div className="space-y-4">
+            <div className="grid gap-4 md:grid-cols-2">
+                <div className="space-y-2">
+                    <label className="text-sm font-medium">Seleccionar Rol</label>
+                    <select className="form-select" value={selectedRoleId} onChange={onRoleChanged}>
                         <option value={0}>Seleccionar Rol</option>
-                        {/* Roles would be mapped here */}
                     </select>
                 </div>
-                <div className="col">
-                    <div className="col d-flex align-items-center justify-content-end gap-1">
-                        <button className="btn btn-primary" onClick={onSubmitChanges} disabled={selectedRoleId === 0}>Guardar cambios</button>
-                        <button className="btn btn-outline-secondary" onClick={() => changeSelectionAll(true)} disabled={selectedRoleId === 0}>Seleccionar todos</button>
-                        <button className="btn btn-outline-secondary" onClick={() => changeSelectionAll(false)} disabled={selectedRoleId === 0}>Deseleccionar todos</button>
+                <div className="space-y-2">
+                    <div className="flex flex-wrap justify-end gap-2">
+                        <Button onClick={onSubmitChanges} disabled={selectedRoleId === 0}>
+                            <Save className="h-4 w-4" />
+                            Guardar cambios
+                        </Button>
+                        <Button variant="outline" onClick={() => changeSelectionAll(true)} disabled={selectedRoleId === 0}>
+                            <CheckSquare className="h-4 w-4" />
+                            Seleccionar todos
+                        </Button>
+                        <Button variant="outline" onClick={() => changeSelectionAll(false)} disabled={selectedRoleId === 0}>
+                            <Square className="h-4 w-4" />
+                            Deseleccionar todos
+                        </Button>
                     </div>
-                    <div className="col d-flex align-items-center justify-content-end gap-1 mt-2">
-                        <input 
-                            type="text"
+                    <div className="flex items-center gap-2">
+                        <Input
                             placeholder="Ingrese el nombre de la acción"
                             value={systemActionName}
                             onChange={(e) => setSystemActionName(e.target.value)}
-                            style={{ flex: 1, padding: '0.4rem' }}
+                            className="h-9"
                         />
-                        <button className="btn btn-primary" onClick={() => loadSystemActionsData(selectedRoleId, systemActionName)} disabled={selectedRoleId === 0}>Buscar</button>
+                        <Button onClick={() => loadSystemActionsData(selectedRoleId, systemActionName)} disabled={selectedRoleId === 0}>
+                            <Search className="h-4 w-4" />
+                            Buscar
+                        </Button>
                     </div>
                 </div>
             </div>
-            <div className="row">
-                <h3>Acciones del sistema</h3>
+            <div className="space-y-3">
+                <h3 className="text-xl font-semibold tracking-tight">Acciones del sistema</h3>
 
                 {systemActions.length === 0 && !isLoadingData && selectedRoleId > 0 && (
-                    <div className="alert alert-warning text-center">
-                        <i className="bi bi-exclamation-triangle-fill" style={{ fontSize: '50px' }}></i> <br /> No se encontraron acciones del sistema
+                    <div className="alert flex items-center justify-center gap-2 text-center">
+                        <AlertTriangle className="h-5 w-5" />
+                        <span>No se encontraron acciones del sistema</span>
                     </div>
                 )}
                 {selectedRoleId === 0 && (
-                    <div className="alert alert-warning text-center">
-                        <i className="bi bi-exclamation-triangle-fill" style={{ fontSize: '50px' }}></i> <br /> Seleccione un rol para ver las
-                        acciones del sistema
+                    <div className="alert flex items-center justify-center gap-2 text-center">
+                        <AlertTriangle className="h-5 w-5" />
+                        <span>Seleccione un rol para ver las acciones del sistema</span>
                     </div>
                 )}
 
                 {isLoadingData && (
-                    <div className="d-flex justify-content-center align-items-center" style={{ height: '520px' }}>
+                    <div className="flex h-[520px] items-center justify-center">
                         <div>Cargando...</div>
                     </div>
                 )}
 
                 {!isLoadingData && (
-                    <div style={{ height: '520px', width: '100%', overflowY: 'auto' }}>
-                        <div className="row">
+                    <div className="h-[520px] w-full overflow-y-auto pr-1">
+                        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
                             {systemActions.map((action) => (
-                                <div key={action.system_action_id} className="col-md-3 col-sm-12 col-lg-3">
-                                    <div className="card p-3 mb-3 shadow-sm" style={{ height: '162px' }}>
-                                        <h5>{action.system_action_name}</h5>
-                                        <div style={{ height: '40px', overflowY: 'auto' }}>
-                                            <p className="text-muted">{action.description}</p>
-                                        </div>
-                                        <div className="d-flex flex-column justify-content-end">
-                                            <label className="form-label">Asignado</label>
-                                            <input 
-                                                type="checkbox" 
-                                                checked={action.assigned} 
-                                                onChange={(e) => {}}
-                                            />
-                                        </div>
+                                <div key={action.system_action_id} className="card flex h-44 flex-col gap-2 p-3">
+                                    <h5 className="text-sm font-semibold">{action.system_action_name}</h5>
+                                    <div className="h-12 overflow-y-auto">
+                                        <p className="text-sm text-muted-foreground">{action.description}</p>
+                                    </div>
+                                    <div className="mt-auto flex items-center justify-between border-t border-border pt-2">
+                                        <label className="text-xs font-medium text-muted-foreground">Asignado</label>
+                                        <input type="checkbox" checked={action.assigned} onChange={(e) => {}} className="h-4 w-4" />
                                     </div>
                                 </div>
                             ))}

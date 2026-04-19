@@ -1,6 +1,8 @@
 import { useState, useCallback } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { changePassword } from '../../services'
+import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
 
 export const ChangePasswordForm = (): JSX.Element => {
     const navigate = useNavigate()
@@ -27,30 +29,23 @@ export const ChangePasswordForm = (): JSX.Element => {
                 alert(result.message)
             }
         },
-        [navigate, recoveryCode, password, confirmPassword]
+        [navigate, recoveryCode, password, confirmPassword],
     )
 
     return (
-        <form onSubmit={onSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            <input 
-                type="password" 
-                placeholder="Password" 
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                style={{ padding: '0.5rem' }}
-                required 
-            />
-            <input 
-                type="password" 
-                placeholder="Confirm Password" 
+        <form onSubmit={onSubmit} className="space-y-4">
+            <Input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} className="h-10" required />
+            <Input
+                type="password"
+                placeholder="Confirm Password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                style={{ padding: '0.5rem' }}
-                required 
+                className="h-10"
+                required
             />
-            <button type="submit" disabled={loading} style={{ padding: '0.5rem' }}>
+            <Button type="submit" disabled={loading} className="h-10 w-full">
                 {loading ? 'Cargando...' : 'Continue'}
-            </button>
+            </Button>
         </form>
     )
 }

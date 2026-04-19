@@ -3,7 +3,7 @@ import { HomePage, ProfilePage, TasksPage } from '../shared/pages'
 import { lazy } from 'react'
 import IconDemo from '../components/IconDemo'
 
-const administrationRoutes = lazy(() => import(/* WebpackChunkName: "administrationRoutes" */ '../administration/layouts/Administration'))
+const AdministrationRoutes = lazy(() => import(/* WebpackChunkName: "administrationRoutes" */ '../administration/layouts/Administration'))
 const routes = [
     {
         path: '/demo',
@@ -24,7 +24,7 @@ const routes = [
     {
         path: '/administration/*',
         to: '/administration',
-        element: administrationRoutes,
+        element: AdministrationRoutes,
     },
 ]
 

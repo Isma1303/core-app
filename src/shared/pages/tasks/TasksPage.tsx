@@ -1,28 +1,34 @@
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { ListTodo } from 'lucide-react'
+
 export const TasksPage = (): JSX.Element => {
     return (
-        <div style={{ padding: '1rem' }}>
+        <div className="space-y-4 p-4">
             <h2 className={'content-block'}>Tasks</h2>
-            <div className={'dx-card wide-card'} style={{ overflowX: 'auto' }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                    <thead>
-                        <tr style={{ borderBottom: '1px solid #ccc' }}>
-                            <th style={{ textAlign: 'left', padding: '8px' }}>ID</th>
-                            <th style={{ textAlign: 'left', padding: '8px' }}>Subject</th>
-                            <th style={{ textAlign: 'left', padding: '8px' }}>Status</th>
-                            <th style={{ textAlign: 'left', padding: '8px' }}>Priority</th>
-                            <th style={{ textAlign: 'left', padding: '8px' }}>Assigned To</th>
-                            <th style={{ textAlign: 'left', padding: '8px' }}>Start Date</th>
-                            <th style={{ textAlign: 'left', padding: '8px' }}>Due Date</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td colSpan={7} style={{ textAlign: 'center', padding: '20px' }}>
-                                Componente Grid (DevExtreme) eliminado. Listo para migración a shadcn/ui.
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+            <div className={'dx-card wide-card p-4'}>
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead>ID</TableHead>
+                            <TableHead>Subject</TableHead>
+                            <TableHead>Status</TableHead>
+                            <TableHead>Priority</TableHead>
+                            <TableHead>Assigned To</TableHead>
+                            <TableHead>Start Date</TableHead>
+                            <TableHead>Due Date</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        <TableRow>
+                            <TableCell colSpan={7} className="py-10 text-center text-muted-foreground">
+                                <div className="mx-auto flex w-fit items-center gap-2 rounded-lg border border-border bg-muted/40 px-4 py-2">
+                                    <ListTodo className="h-4 w-4" />
+                                    Componente Grid (DevExtreme) eliminado. Listo para migración a shadcn/ui.
+                                </div>
+                            </TableCell>
+                        </TableRow>
+                    </TableBody>
+                </Table>
             </div>
         </div>
     )

@@ -2,6 +2,9 @@ import { useState, useRef } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import './LoginForm.scss'
 import { useAuthStore } from '../..'
+import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
+import { KeyRound, UserRound } from 'lucide-react'
 
 export const LoginForm = (): JSX.Element => {
     const navigate = useNavigate()
@@ -24,34 +27,36 @@ export const LoginForm = (): JSX.Element => {
     }
 
     return (
-        <form className={'login-form'} onSubmit={onSubmit}>
-            <h2 className="">Bienvenido </h2>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                <input
-                    type="text"
-                    placeholder="Usuario"
-                    defaultValue={formData.current.user}
-                    onChange={(e) => (formData.current.user = e.target.value)}
-                    required
-                    style={{ padding: '0.5rem', borderRadius: '4px', border: '1px solid #ccc' }}
-                    disabled={loading}
-                />
-                <input
-                    type="password"
-                    placeholder="Contraseña"
-                    defaultValue={formData.current.password}
-                    onChange={(e) => (formData.current.password = e.target.value)}
-                    required
-                    style={{ padding: '0.5rem', borderRadius: '4px', border: '1px solid #ccc' }}
-                    disabled={loading}
-                />
-                <button 
-                    type="submit" 
-                    disabled={loading}
-                    style={{ padding: '0.5rem', borderRadius: '4px', border: 'none', background: '#007bff', color: 'white', cursor: 'pointer' }}
-                >
+        <form className={'login-form space-y-4'} onSubmit={onSubmit}>
+            <h2 className="text-2xl font-semibold tracking-tight">Bienvenido</h2>
+            <div className="space-y-3">
+                <div className="relative">
+                    <UserRound className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                    <Input
+                        type="text"
+                        placeholder="Usuario"
+                        defaultValue={formData.current.user}
+                        onChange={(e) => (formData.current.user = e.target.value)}
+                        required
+                        className="h-10 pl-9"
+                        disabled={loading}
+                    />
+                </div>
+                <div className="relative">
+                    <KeyRound className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                    <Input
+                        type="password"
+                        placeholder="Contraseña"
+                        defaultValue={formData.current.password}
+                        onChange={(e) => (formData.current.password = e.target.value)}
+                        required
+                        className="h-10 pl-9"
+                        disabled={loading}
+                    />
+                </div>
+                <Button type="submit" disabled={loading} className="h-10 w-full">
                     {loading ? 'Cargando...' : 'Ingresar'}
-                </button>
+                </Button>
                 <div className={'link'}>
                     <Link to={'/reset-password'}>Olvidé mi contraseña</Link>
                 </div>

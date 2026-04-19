@@ -2,6 +2,8 @@ import { useState, useCallback } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { resetPassword } from '../../services'
 import './ResetPasswordForm.scss'
+import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
 
 const notificationText = "We've sent a link to reset your password. Check your inbox."
 
@@ -25,22 +27,15 @@ export const ResetPasswordForm = (): JSX.Element => {
                 alert(result.message)
             }
         },
-        [navigate, email]
+        [navigate, email],
     )
 
     return (
-        <form className={'reset-password-form'} onSubmit={onSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            <input 
-                type="email" 
-                placeholder="Correo Electrónico" 
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                style={{ padding: '0.5rem' }}
-                required 
-            />
-            <button type="submit" disabled={loading} style={{ padding: '0.5rem' }}>
+        <form className={'reset-password-form space-y-4'} onSubmit={onSubmit}>
+            <Input type="email" placeholder="Correo Electrónico" value={email} onChange={(e) => setEmail(e.target.value)} className="h-10" required />
+            <Button type="submit" disabled={loading} className="h-10 w-full">
                 {loading ? 'Cargando...' : 'Recuperar mi contraseña'}
-            </button>
+            </Button>
             <div className={'login-link'}>
                 Volver a <Link to={'/login'}>Iniciar Sesión</Link>
             </div>

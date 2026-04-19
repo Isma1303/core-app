@@ -2,6 +2,8 @@ import { useState, useCallback } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { createAccount } from '../../services'
 import './CreateAccountForm.scss'
+import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
 
 export const CreateAccountForm = (): JSX.Element => {
     const navigate = useNavigate()
@@ -28,41 +30,27 @@ export const CreateAccountForm = (): JSX.Element => {
                 alert(result.message)
             }
         },
-        [navigate, email, password, confirmPassword]
+        [navigate, email, password, confirmPassword],
     )
 
     return (
-        <form className={'create-account-form'} onSubmit={onSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            <input 
-                type="email" 
-                placeholder="Email" 
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                style={{ padding: '0.5rem' }}
-                required 
-            />
-            <input 
-                type="password" 
-                placeholder="Password" 
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                style={{ padding: '0.5rem' }}
-                required 
-            />
-            <input 
-                type="password" 
-                placeholder="Confirm Password" 
+        <form className={'create-account-form space-y-4'} onSubmit={onSubmit}>
+            <Input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} className="h-10" required />
+            <Input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} className="h-10" required />
+            <Input
+                type="password"
+                placeholder="Confirm Password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                style={{ padding: '0.5rem' }}
-                required 
+                className="h-10"
+                required
             />
             <div className="policy-info">
                 By creating an account, you agree to the <Link to="#">Terms of Service</Link> and <Link to="#">Privacy Policy</Link>
             </div>
-            <button type="submit" disabled={loading} style={{ padding: '0.5rem' }}>
+            <Button type="submit" disabled={loading} className="h-10 w-full">
                 {loading ? 'Cargando...' : 'Create a new account'}
-            </button>
+            </Button>
             <div className={'login-link'}>
                 Have an account? <Link to={'/login'}>Sign In</Link>
             </div>

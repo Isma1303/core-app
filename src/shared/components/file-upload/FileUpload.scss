@@ -1,19 +1,15 @@
 .file-upload-component {
     .drag-and-drop {
-        border: 2px dashed #1a2b55;
-        border-radius: 10px;
-        padding: 10px;
+        border: 1px dashed var(--border);
+        border-radius: 0.75rem;
+        padding: 1rem;
         text-align: center;
-        transition: border-color 0.3s ease-in-out;
-    }
-
-    i {
-        font-size: 5em;
-        color: #1a2b55;
+        background-color: color-mix(in oklch, var(--card) 92%, var(--foreground) 8%);
+        transition: border-color 0.3s ease-in-out, background-color 0.3s ease-in-out;
     }
 
     .drag-and-drop.drag-over {
-        border-color: #7a9ebc;
+        border-color: var(--ring);
     }
 
     .drag-and-drop p {
@@ -24,6 +20,7 @@
 
     .drag-and-drop:hover {
         cursor: pointer;
+        background-color: color-mix(in oklch, var(--muted) 85%, transparent);
     }
 
     .drag-and-drop.drag-enter {
@@ -47,6 +44,6 @@
     }
 
     .btn {
-        margin-top: 5px;
+        margin-top: 0.5rem;
     }
 }

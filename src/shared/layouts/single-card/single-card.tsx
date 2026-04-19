@@ -8,7 +8,7 @@ interface Props {
 
 export const SingleCard = ({ title, description, children }: Props): JSX.Element => {
     return (
-        <div style={{ height: '100%', width: '100%', overflowY: 'auto' }} className={'with-footer single-card'}>
+        <div className={'with-footer single-card h-full w-full overflow-y-auto p-4 sm:p-8'}>
             <div className={'dx-card content'}>
                 <div className={'header'}>
                     <div className={'title'}>{title}</div>

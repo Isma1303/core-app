@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react'
-import { customStoreBuilder } from '../../shared/builders/custom-store-builder.builder'
 import { useRolesDataGridConfig } from '../hooks'
 import { Role } from '../interfaces'
 import { RoleService } from '../services'
-import { ScpGridConfig } from '../../shared/interfaces'
 import { ScpGrid } from '../../shared/components'
+import { ScpGridConfig } from '@/shared/interfaces/scp-grid-config.interface'
+import { customStoreBuilder } from '@/shared/builders/custom-store-builder.builder'
 
 export const Roles = (): JSX.Element => {
     const rolesService = new RoleService()

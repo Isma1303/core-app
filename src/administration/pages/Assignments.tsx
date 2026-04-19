@@ -2,6 +2,8 @@ import { AssignmentsTabsOptions } from '../enums'
 import { ContentTab } from '../interfaces'
 import { useState } from 'react'
 import { ActionsToRoles, UsersToRoles, MenuOptionsToRoles } from '../components'
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { ShieldCheck, UserRoundCog, ListChecks, Table2 } from 'lucide-react'
 
 export const Assignments = () => {
     const [indexTab, setIndexTab] = useState<AssignmentsTabsOptions>(AssignmentsTabsOptions.ROLES)
@@ -10,49 +12,41 @@ export const Assignments = () => {
         {
             id: AssignmentsTabsOptions.ROLES,
             text: 'Roles',
-            icon: 'bi bi-person-rolodex',
+            icon: <ShieldCheck className="h-4 w-4" />,
         },
         {
             id: AssignmentsTabsOptions.ACTIONS,
             text: 'Acciones',
-            icon: 'bi bi-person-lines-fill',
+            icon: <UserRoundCog className="h-4 w-4" />,
         },
         {
             id: AssignmentsTabsOptions.MENU_OPTIONS,
             text: 'Opciones de Menú',
-            icon: 'bi bi-ui-checks',
+            icon: <ListChecks className="h-4 w-4" />,
         },
         {
             id: AssignmentsTabsOptions.RECORDS,
             text: 'Registros',
-            icon: 'bi bi-table',
+            icon: <Table2 className="h-4 w-4" />,
         },
     ]
 
     return (
-        <div style={{ padding: '1rem' }}>
+        <div className="space-y-4 p-4">
             <h2 className="content-block">Asignaciones de Permisos</h2>
 
-            <div className="row mx-3" style={{ marginBottom: '1rem', borderBottom: '1px solid #ccc', display: 'flex', gap: '1rem', overflowX: 'auto' }}>
-                {assignmentsTabs.map(tab => (
-                    <button 
-                        key={tab.id}
-                        onClick={() => setIndexTab(tab.id)}
-                        style={{ 
-                            padding: '0.5rem 1rem', 
-                            border: 'none', 
-                            background: 'none',
-                            borderBottom: indexTab === tab.id ? '2px solid blue' : 'none',
-                            cursor: 'pointer',
-                            whiteSpace: 'nowrap'
-                        }}
-                    >
-                        <i className={tab.icon}></i> {tab.text}
-                    </button>
-                ))}
-            </div>
+            <Tabs value={String(indexTab)} onValueChange={(value) => setIndexTab(Number(value) as AssignmentsTabsOptions)}>
+                <TabsList className="w-full justify-start overflow-x-auto" variant="line">
+                    {assignmentsTabs.map((tab) => (
+                        <TabsTrigger key={tab.id} value={String(tab.id)} className="gap-2 whitespace-nowrap">
+                            {tab.icon}
+                            {tab.text}
+                        </TabsTrigger>
+                    ))}
+                </TabsList>
+            </Tabs>
 
-            <div className="row mx-3">
+            <div className="rounded-xl border border-border bg-card p-4">
                 {indexTab === AssignmentsTabsOptions.ROLES && <UsersToRoles />}
                 {indexTab === AssignmentsTabsOptions.ACTIONS && <ActionsToRoles />}
                 {indexTab === AssignmentsTabsOptions.MENU_OPTIONS && <MenuOptionsToRoles />}

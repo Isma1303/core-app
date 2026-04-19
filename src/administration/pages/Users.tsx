@@ -2,6 +2,10 @@ import { useEffect, useState } from 'react'
 import { UsersService } from '../services'
 import { User } from '../interfaces'
 import { UserChangePasswordForm, UserForm } from '../components'
+import { Button } from '@/components/ui/button'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Plus, UsersRound } from 'lucide-react'
 
 export const Users = () => {
     const [userData, setUserData] = useState<User | null>(null)
@@ -20,60 +24,68 @@ export const Users = () => {
     }
 
     return (
-        <div style={{ padding: '1rem' }}>
+        <div className="space-y-4 p-4">
             <h2 className="content-block">Usuarios</h2>
-            
-            <div className="dx-card" style={{ padding: '1rem', marginBottom: '1rem' }}>
-                <p>Módulo de Usuarios - Grid (DevExtreme) eliminado.</p>
-                <button onClick={() => { setUserData({} as User); setShowUserForm(true); }}>Nuevo Usuario</button>
+
+            <div className="dx-card space-y-3 p-4">
+                <p className="text-sm text-muted-foreground">Módulo de Usuarios - Grid (DevExtreme) eliminado.</p>
+                <Button
+                    onClick={() => {
+                        setUserData({} as User)
+                        setShowUserForm(true)
+                    }}
+                >
+                    <Plus className="h-4 w-4" />
+                    Nuevo Usuario
+                </Button>
             </div>
 
-            {/* Placeholder for Data Table */}
-            <table style={{ width: '100%', borderCollapse: 'collapse', border: '1px solid #ccc' }}>
-                <thead>
-                    <tr style={{ background: '#eee' }}>
-                        <th style={{ padding: '8px', textAlign: 'left' }}>Usuario</th>
-                        <th style={{ padding: '8px', textAlign: 'left' }}>Nombre</th>
-                        <th style={{ padding: '8px', textAlign: 'left' }}>Email</th>
-                        <th style={{ padding: '8px', textAlign: 'left' }}>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td colSpan={4} style={{ textAlign: 'center', padding: '2rem' }}>
-                            Listo para migración a shadcn/ui DataTable
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+            <div className="dx-card p-4">
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead>Usuario</TableHead>
+                            <TableHead>Nombre</TableHead>
+                            <TableHead>Email</TableHead>
+                            <TableHead>Acciones</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        <TableRow>
+                            <TableCell colSpan={4} className="py-10 text-center text-muted-foreground">
+                                <div className="mx-auto flex w-fit items-center gap-2 rounded-lg border border-border bg-muted/40 px-4 py-2">
+                                    <UsersRound className="h-4 w-4" />
+                                    Listo para migración a shadcn/ui DataTable
+                                </div>
+                            </TableCell>
+                        </TableRow>
+                    </TableBody>
+                </Table>
+            </div>
 
-            {showUserForm && (
-                <div style={{ 
-                    position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, 
-                    backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', 
-                    justifyContent: 'center', alignItems: 'center', zIndex: 1000 
-                }}>
-                    <div style={{ backgroundColor: 'white', padding: '2rem', borderRadius: '8px', maxWidth: '80vw', maxHeight: '90vh', overflowY: 'auto' }}>
-                        <h3>{userData?.user_id ? 'Actualizar usuario' : 'Crear usuario'}</h3>
-                        <UserForm user={userData!} rowUpdated={onRowAffected} closePopup={unmountForm} />
-                        <button onClick={unmountForm} style={{ marginTop: '1rem' }}>Cerrar</button>
-                    </div>
-                </div>
-            )}
+            <Dialog open={showUserForm} onOpenChange={(open) => !open && unmountForm()}>
+                <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-3xl">
+                    <DialogHeader>
+                        <DialogTitle>{userData?.user_id ? 'Actualizar usuario' : 'Crear usuario'}</DialogTitle>
+                    </DialogHeader>
+                    {showUserForm && <UserForm user={userData!} rowUpdated={onRowAffected} closePopup={unmountForm} />}
+                    <Button variant="outline" onClick={unmountForm}>
+                        Cerrar
+                    </Button>
+                </DialogContent>
+            </Dialog>
 
-            {showPasswordChangeForm && (
-                <div style={{ 
-                    position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, 
-                    backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', 
-                    justifyContent: 'center', alignItems: 'center', zIndex: 1000 
-                }}>
-                    <div style={{ backgroundColor: 'white', padding: '2rem', borderRadius: '8px', maxWidth: '80vw', maxHeight: '90vh', overflowY: 'auto' }}>
-                        <h3>Actualizar contraseña</h3>
-                        <UserChangePasswordForm user={userData!} rowUpdated={onRowAffected} closePopup={unmountForm} />
-                        <button onClick={unmountForm} style={{ marginTop: '1rem' }}>Cerrar</button>
-                    </div>
-                </div>
-            )}
+            <Dialog open={showPasswordChangeForm} onOpenChange={(open) => !open && unmountForm()}>
+                <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-xl">
+                    <DialogHeader>
+                        <DialogTitle>Actualizar contraseña</DialogTitle>
+                    </DialogHeader>
+                    {showPasswordChangeForm && <UserChangePasswordForm user={userData!} rowUpdated={onRowAffected} closePopup={unmountForm} />}
+                    <Button variant="outline" onClick={unmountForm}>
+                        Cerrar
+                    </Button>
+                </DialogContent>
+            </Dialog>
         </div>
     )
 }

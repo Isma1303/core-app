@@ -7,19 +7,15 @@ import { useAuthStore } from './auth'
 
 export const Content = (): JSX.Element => {
     return (
-        <SideNavOuterToolbar title={appInfo.title}>
+        <SideNavOuterToolbar 
+        // title={appInfo.title}
+        title=''
+        >
             <Routes>
-                {routes.map(({ path, element: Element }) => (
-                    <Route
-                        key={path}
-                        path={path}
-                        element={<Element />}
-                    />
+                {routes.map(({ path, element: RouteComponent }) => (
+                    <Route key={path} path={path} element={<RouteComponent />} />
                 ))}
-                <Route
-                    path='*'
-                    element={<Navigate to='/home' />}
-                />
+                <Route path="*" element={<Navigate to="/home" />} />
             </Routes>
             <Footer />
         </SideNavOuterToolbar>

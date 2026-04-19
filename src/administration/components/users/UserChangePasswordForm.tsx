@@ -1,5 +1,7 @@
 import { User } from '../../interfaces'
 import { useState } from 'react'
+import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
 
 interface Props {
     user: User
@@ -25,28 +27,18 @@ export const UserChangePasswordForm = (props: Props & EventsProps): JSX.Element 
     }
 
     return (
-        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            <div>
-                <label>Contraseña</label>
-                <input 
-                    type="password" 
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    style={{ width: '100%', padding: '0.5rem' }} 
-                    required 
-                />
+        <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-2">
+                <label className="text-sm font-medium">Contraseña</label>
+                <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="h-10" required />
             </div>
-            <div>
-                <label>Confirmar Contraseña</label>
-                <input 
-                    type="password" 
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    style={{ width: '100%', padding: '0.5rem' }} 
-                    required 
-                />
+            <div className="space-y-2">
+                <label className="text-sm font-medium">Confirmar Contraseña</label>
+                <Input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} className="h-10" required />
             </div>
-            <button type="submit" style={{ padding: '0.5rem 1rem' }}>Guardar</button>
+            <Button type="submit" className="h-10">
+                Guardar
+            </Button>
         </form>
     )
 }
