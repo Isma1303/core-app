@@ -112,7 +112,7 @@ serverAPI.interceptors.response.use(
         }
 
         showErrorMessage(errorMessage)
-        return Promise.resolve({ data: [] }) // Return an empty response to the caller
+        return Promise.resolve({ data: { data: [] } }) // Return a compatible structure
     }
 )
 

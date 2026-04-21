@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react'
+import { toast } from 'sonner'
 import { Link, useNavigate } from 'react-router-dom'
 import { resetPassword } from '../../services'
 import './ResetPasswordForm.scss'
@@ -22,22 +23,22 @@ export const ResetPasswordForm = (): JSX.Element => {
 
             if (result.isOk) {
                 navigate('/login')
-                alert(notificationText)
+                toast.info(notificationText)
             } else {
-                alert(result.message)
+                toast.error(result.message)
             }
         },
         [navigate, email],
     )
 
     return (
-        <form className={'reset-password-form space-y-4'} onSubmit={onSubmit}>
-            <Input type="email" placeholder="Correo Electrónico" value={email} onChange={(e) => setEmail(e.target.value)} className="h-10" required />
-            <Button type="submit" disabled={loading} className="h-10 w-full">
+        <form className="space-y-4" onSubmit={onSubmit}>
+            <Input type="email" placeholder="Correo Electrónico" value={email} onChange={(e) => setEmail(e.target.value)} className="h-10 border-border/50 focus-visible:ring-1 focus-visible:ring-foreground/20 transition-all" required />
+            <Button type="submit" disabled={loading} className="h-10 w-full bg-foreground text-background hover:bg-foreground/90 active:scale-[0.98] transition-all">
                 {loading ? 'Cargando...' : 'Recuperar mi contraseña'}
             </Button>
-            <div className={'login-link'}>
-                Volver a <Link to={'/login'}>Iniciar Sesión</Link>
+            <div className="text-center text-sm mt-4">
+                Volver a <Link to={'/login'} className="text-muted-foreground hover:text-foreground transition-colors font-medium">Iniciar Sesión</Link>
             </div>
         </form>
     )

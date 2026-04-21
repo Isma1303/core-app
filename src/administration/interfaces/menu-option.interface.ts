@@ -4,5 +4,6 @@ export interface MenuOption {
     icon: string
     path: string
     sort: string
+    items?: MenuOption[]
     parent_menu_option_id: number
 }

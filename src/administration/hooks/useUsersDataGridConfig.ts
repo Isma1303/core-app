@@ -4,6 +4,7 @@ import { DataService } from '../../shared/interfaces'
 import { useAuthStore } from '../../auth'
 import { User } from '../interfaces'
 import { useState } from 'react'
+import { toast } from 'sonner'
 
 export const useUsersDataGridConfig = (tablesService: DataService<User>, datagrid: React.RefObject<any>) => {
     const userInfo = useAuthStore((state) => state.userInfo)
@@ -88,6 +89,7 @@ export const useUsersDataGridConfig = (tablesService: DataService<User>, datagri
             margin: 'mx-3',
             editSelection: false,
             customAdd: false,
+            showSelectionColumn: true,
             customButtons: [],
         }
         const modelProperties = await tablesService.getModelProperties()
@@ -109,6 +111,7 @@ export const useUsersDataGridConfig = (tablesService: DataService<User>, datagri
                 },
             ]
             config.editSelection = true
+            config.allowUpdate = true
             config.allowDelete = true
             config.customAdd = true
             config.buttonsInLastColumn = false
@@ -121,14 +124,14 @@ export const useUsersDataGridConfig = (tablesService: DataService<User>, datagri
         switch (buttonName) {
             case 'changePassword': {
                 setShowPasswordChangeForm(false)
-                const selectedRows: any[] | undefined = await datagrid.current?.instance().getSelectedRowsData()
+                const selectedRows: any[] | undefined = await datagrid.current?.getSelectedRowsData?.()
                 if (selectedRows && selectedRows.length === 0)
-                    return alert('Debe seleccionar un registro / solo puede seleccionar 1 registro')
+                    return toast.warning('Debe seleccionar un registro / solo puede seleccionar 1 registro')
 
                 if (selectedRows && selectedRows.length > 1) {
-                    const selectedKeys: any[] | undefined = await datagrid.current?.instance().getSelectedRowKeys()
+                    const selectedKeys: any[] | undefined = await datagrid.current?.getSelectedRowKeys?.()
                     if (selectedKeys) selectedKeys.pop()
-                    datagrid.current?.instance().deselectRows(selectedKeys as any[])
+                    datagrid.current?.deselectRows?.(selectedKeys as any[])
                 }
 
                 if (!selectedRows || !selectedRows[0]) return
@@ -156,16 +159,16 @@ export const useUsersDataGridConfig = (tablesService: DataService<User>, datagri
             return
         }
 
-        alert('Debe seleccionar un registro')
+        toast.warning('Debe seleccionar un registro')
     }
 
     const onRowAffected = (rowAffected: boolean) => {
-        if (rowAffected) alert('Registro actualizado con éxito')
+        if (rowAffected) toast.success('Registro actualizado con éxito')
 
         setShowPasswordChangeForm(false)
         setShowUserForm(false)
         setUserData(null)
-        datagrid.current?.instance().refresh()
+        datagrid.current?.refresh?.()
     }
 
     const unmountForm = () => {

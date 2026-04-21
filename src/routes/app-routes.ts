@@ -1,18 +1,9 @@
 import { withNavigationWatcher } from './components/navigationWatcher'
-import { HomePage, ProfilePage, TasksPage } from '../shared/pages'
+import { HomePage, ProfilePage } from '../shared/pages'
 import { lazy } from 'react'
-import IconDemo from '../components/IconDemo'
 
 const AdministrationRoutes = lazy(() => import(/* WebpackChunkName: "administrationRoutes" */ '../administration/layouts/Administration'))
 const routes = [
-    {
-        path: '/demo',
-        element: IconDemo,
-    },
-    {
-        path: '/tasks',
-        element: TasksPage,
-    },
     {
         path: '/profile',
         element: ProfilePage,

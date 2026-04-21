@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable no-unused-vars */
 import { Dispatch, useState } from 'react'
+import { toast } from 'sonner'
 import { SystemActionsToRolesService } from '../services'
 import { SystemAction } from '../interfaces'
 
@@ -76,7 +77,7 @@ export const useRolesSystemActions = (): UseRolesSystemActions => {
         })
 
         if (assignedResponse) {
-            alert('Cambios guardados correctamente')
+            toast.success('Cambios guardados correctamente')
         }
         await loadSystemActionsData(selectedRoleId, systemActionName)
     }

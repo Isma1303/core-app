@@ -21,9 +21,17 @@ export const Configurations = () => {
     }, [])
 
     return (
-        <>
-            <h2 className="content-block">Configuraciones</h2>
-            {configurationsConfiguration && <ScpGrid configuration={configurationsConfiguration!} />}
-        </>
+        <div className="space-y-4 animate-in fade-in duration-500">
+            <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between px-4">
+                <div>
+                    <h2 className="text-2xl font-semibold tracking-tight text-foreground">Configuraciones</h2>
+                    <p className="text-muted-foreground text-sm">Gestiona las variables y parámetros globales del sistema.</p>
+                </div>
+            </div>
+
+            <div className="px-4 pb-8">
+                {configurationsConfiguration && <ScpGrid configuration={configurationsConfiguration!} />}
+            </div>
+        </div>
     )
 }

@@ -30,7 +30,7 @@ export class ActionsToRolesService implements DataService<ActionToRole> {
         try {
             const { data: apiResponse } = await serverAPI.get(`${this.URL_BASE}/getRoles/${actionId}`)
 
-            return apiResponse.data
+            return apiResponse?.data || []
         } catch (error: any) {
             throw new Error(error.message)
         }
@@ -40,7 +40,7 @@ export class ActionsToRolesService implements DataService<ActionToRole> {
         try {
             const { data: apiResponse } = await serverAPI.get(`${this.URL_BASE}/getActions/${roleId}`)
 
-            return apiResponse.data
+            return apiResponse?.data || []
         } catch (error: any) {
             throw new Error(error.message)
         }

@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react'
+import { toast } from 'sonner'
 import { useNavigate, useParams } from 'react-router-dom'
 import { changePassword } from '../../services'
 import { Input } from '@/components/ui/input'
@@ -15,7 +16,7 @@ export const ChangePasswordForm = (): JSX.Element => {
         async (e: React.FormEvent) => {
             e.preventDefault()
             if (password !== confirmPassword) {
-                alert('Passwords do not match')
+                toast.error('Passwords do not match')
                 return
             }
             setLoading(true)
@@ -26,7 +27,7 @@ export const ChangePasswordForm = (): JSX.Element => {
             if (result.isOk) {
                 navigate('/login')
             } else {
-                alert(result.message)
+                toast.error(result.message)
             }
         },
         [navigate, recoveryCode, password, confirmPassword],
@@ -34,16 +35,16 @@ export const ChangePasswordForm = (): JSX.Element => {
 
     return (
         <form onSubmit={onSubmit} className="space-y-4">
-            <Input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} className="h-10" required />
+            <Input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} className="h-10 border-border/50 focus-visible:ring-1 focus-visible:ring-foreground/20 transition-all" required />
             <Input
                 type="password"
                 placeholder="Confirm Password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                className="h-10"
+                className="h-10 border-border/50 focus-visible:ring-1 focus-visible:ring-foreground/20 transition-all"
                 required
             />
-            <Button type="submit" disabled={loading} className="h-10 w-full">
+            <Button type="submit" disabled={loading} className="h-10 w-full bg-foreground text-background hover:bg-foreground/90 active:scale-[0.98] transition-all">
                 {loading ? 'Cargando...' : 'Continue'}
             </Button>
         </form>

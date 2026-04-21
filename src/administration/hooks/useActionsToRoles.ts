@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-vars */
 import { ActionsToRolesService } from '../services/actions-to-roles.service'
+import { toast } from 'sonner'
 import { ActionToRole, Role } from '../interfaces'
 import { Condition, DataService } from '../../shared/interfaces'
 
@@ -23,20 +24,9 @@ export const useActionsToRoles = (params: Params): UseActionsToRoles => {
     const rolesCustomStore = {
         key: 'role_id',
         load: async (loadOptions: any) => {
-            if (params.actionId !== 0) {
-                return params.actionsToRolesService
-                    .getRoles(params.actionId)
-                    .then((res) => {
-                        return res.filter((reg: ActionToRole) => reg.assigned == true)
-                    })
-                    .catch(() => {
-                        return []
-                    })
-            } else {
-                const totalRecords = await params.rolesService.getTotalRecords()
-                if (totalRecords === 0) return []
-                return params.rolesService.getRecords(loadOptions.skip || 0, loadOptions.take || totalRecords).catch(() => [])
-            }
+            const totalRecords = await params.rolesService.getTotalRecords()
+            if (totalRecords === 0) return []
+            return params.rolesService.getRecords(loadOptions.skip || 0, loadOptions.take || totalRecords).catch(() => [])
         },
     }
 
@@ -80,7 +70,7 @@ export const useActionsToRoles = (params: Params): UseActionsToRoles => {
 
     const actionsConfig: any = {
         dataSource: rolesToActionsCustomStore,
-        dataId: 'accion_id',
+        dataId: 'action_id',
         columns: [
             {
                 dataField: 'assigned',
@@ -136,7 +126,7 @@ export const useActionsToRoles = (params: Params): UseActionsToRoles => {
             const deletePermisionResponse = await params.actionsToRolesService.deleteActions(condiciones).catch(() => 0)
 
             if (deletePermisionResponse === 1) {
-                alert('Permisos Revocados con Éxito')
+                toast.success('Permisos Revocados con Éxito')
             }
         }
         const actionsToRole = savingRowsEvent.changes
@@ -148,11 +138,10 @@ export const useActionsToRoles = (params: Params): UseActionsToRoles => {
             const respuestaAsignacionPermisos = await params.actionsToRolesService.createRecords(actionsToRole).catch(() => ({} as ActionToRole))
 
             if (respuestaAsignacionPermisos.role_id) {
-                alert('Permisos Aplicados con Éxito')
+                toast.success('Permisos Aplicados con Éxito')
             }
         }
-        params.actionsToRolesDatagrid.current?.instance().refresh()
-        params.actionsToRolesDatagrid.current?.instance().cancelEditData()
+        // ScpGrid will refresh after saving if configured correctly
     }
 
     return {

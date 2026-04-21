@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-vars */
 import { MenuOptionToRole, Role } from '../interfaces'
+import { toast } from 'sonner'
 import { Condition, DataService } from '../../shared/interfaces'
 import { MenuOptionsToRolesService } from '../services'
 
@@ -95,7 +96,7 @@ export const useMenuOptionsToRoles = (params: Params): UseMenuOptionsToRoles => 
         const deletePermisionResponse = await params.menuOptionsToRolesService.deleteMenuOptions(condiciones).catch(() => 0)
 
         if (deletePermisionResponse === 1) {
-            alert('Permisos Revocados con Éxito')
+            toast.success('Permisos Revocados con Éxito')
         }
 
         if (menuOptionsToRole.length > 0) {
@@ -104,7 +105,7 @@ export const useMenuOptionsToRoles = (params: Params): UseMenuOptionsToRoles => 
                 .catch(() => ({} as MenuOptionToRole))
 
             if (respuestaAsignacionPermisos.role_id) {
-                alert('Permisos Aplicados con Éxito')
+                toast.success('Permisos Aplicados con Éxito')
             }
         }
     }

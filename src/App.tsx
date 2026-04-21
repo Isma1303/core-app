@@ -25,11 +25,14 @@ const App = () => {
     return <UnauthenticatedContent />
 }
 
+import { Toaster } from 'sonner'
+
 export default function Root() {
     const screenSizeClass = useScreenSizeClass()
 
     return (
         <Suspense fallback={<SuspenseFallback />}>
+            <Toaster position="top-right" richColors closeButton />
             <BrowserRouter>
                 <div className={`app ${screenSizeClass}`}>
                     <Routes>

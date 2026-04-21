@@ -4,7 +4,7 @@ import './LoginForm.scss'
 import { useAuthStore } from '../..'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { KeyRound, UserRound } from 'lucide-react'
+import { KeyRound, UserRound, LogIn } from 'lucide-react'
 
 export const LoginForm = (): JSX.Element => {
     const navigate = useNavigate()
@@ -27,38 +27,44 @@ export const LoginForm = (): JSX.Element => {
     }
 
     return (
-        <form className={'login-form space-y-4'} onSubmit={onSubmit}>
-            <h2 className="text-2xl font-semibold tracking-tight">Bienvenido</h2>
-            <div className="space-y-3">
-                <div className="relative">
-                    <UserRound className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+        <form className="flex flex-col gap-4 w-full" onSubmit={onSubmit}>
+            <div className="space-y-4">
+                <div className="relative w-full">
+                    <UserRound className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground pointer-events-none" />
                     <Input
                         type="text"
                         placeholder="Usuario"
                         defaultValue={formData.current.user}
                         onChange={(e) => (formData.current.user = e.target.value)}
                         required
-                        className="h-10 pl-9"
+                        className="pl-10 h-11 text-foreground bg-background border-border/50 focus-visible:ring-1 focus-visible:ring-foreground/20 transition-all"
                         disabled={loading}
                     />
                 </div>
-                <div className="relative">
-                    <KeyRound className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <div className="relative w-full">
+                    <KeyRound className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground pointer-events-none" />
                     <Input
                         type="password"
                         placeholder="Contraseña"
                         defaultValue={formData.current.password}
                         onChange={(e) => (formData.current.password = e.target.value)}
                         required
-                        className="h-10 pl-9"
+                        className="pl-10 h-11 text-foreground bg-background border-border/50 focus-visible:ring-1 focus-visible:ring-foreground/20 transition-all"
                         disabled={loading}
                     />
                 </div>
-                <Button type="submit" disabled={loading} className="h-10 w-full">
-                    {loading ? 'Cargando...' : 'Ingresar'}
+                <Button type="submit" disabled={loading} className="w-full h-11 text-sm font-semibold transition-transform active:scale-[0.98] mt-2 bg-foreground text-background hover:bg-foreground/90">
+                    {loading ? 'Cargando...' : (
+                        <div className="flex items-center justify-center">
+                            <LogIn className="mr-2 w-5 h-5" />
+                            Ingresar
+                        </div>
+                    )}
                 </Button>
-                <div className={'link'}>
-                    <Link to={'/reset-password'}>Olvidé mi contraseña</Link>
+                <div className="text-center mt-4">
+                    <Link to={'/reset-password'} className="text-xs text-muted-foreground hover:text-foreground transition-colors">
+                        Olvidé mi contraseña
+                    </Link>
                 </div>
             </div>
         </form>

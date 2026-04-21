@@ -1,7 +1,10 @@
 import { Action } from '../../interfaces'
-import { ActionsService, ActionsToRolesService } from '../../services'
-import { useState } from 'react'
-import { RoleService } from '../../services/roles.service'
+import { ActionsService, ActionsToRolesService, RoleService } from '../../services'
+import { useEffect, useRef, useState } from 'react'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { ScpGrid } from '@/shared/components'
+import { useActionsToRoles } from '../../hooks/useActionsToRoles'
 
 const actionsService = new ActionsService()
 const rolesService = new RoleService()
@@ -10,29 +13,79 @@ const actionsToRolesService = new ActionsToRolesService()
 export const ActionsToRoles = (): JSX.Element => {
     const [actionId, setActionId] = useState<number>(0)
     const [roleId, setRoleId] = useState<number>(0)
+    const [actions, setActions] = useState<Action[]>([])
+    const actionsToRolesDatagrid = useRef<any>(null)
 
-    const handleActionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        setActionId(Number(e.target.value))
-    }
+    const { rolesConfig, actionsConfig, saveAssignments } = useActionsToRoles({
+        actionId,
+        roleId,
+        actionsToRolesService,
+        rolesService,
+        actionsToRolesDatagrid,
+    })
+
+    useEffect(() => {
+        actionsService
+            .getRecords(0, 100)
+            .then((res) => setActions(res || []))
+            .catch((err) => {
+                console.error('Error fetching actions:', err)
+                setActions([])
+            })
+    }, [])
 
     return (
-        <div className="grid gap-4 md:grid-cols-2">
-            <div className="space-y-2 rounded-xl border border-border bg-card p-4">
-                <h6 className="text-sm font-semibold text-muted-foreground">Lista de Acciones</h6>
-                <select value={actionId} onChange={handleActionChange} className="form-select">
-                    <option value={0}>Seleccionar Acción</option>
-                </select>
-            </div>
-            <div className="rounded-xl border border-border bg-card p-4">
-                <p className="mb-2 text-sm font-semibold text-muted-foreground">Roles</p>
-                <div className="rounded-lg border border-border bg-muted/40 p-4 text-sm text-muted-foreground">Grid de Roles eliminado.</div>
-            </div>
-            <div className="rounded-xl border border-border bg-card p-4 md:col-span-2">
-                <p className="mb-2 text-sm font-semibold text-muted-foreground">Acciones de Rol</p>
-                <div className="rounded-lg border border-border bg-muted/40 p-4 text-sm text-muted-foreground">
-                    Grid de Acciones de Rol eliminado.
-                </div>
-            </div>
+        <div className="grid gap-6 lg:grid-cols-2">
+            <Card className="border-border/50 shadow-sm transition-all hover:shadow-md animate-in fade-in duration-500">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+                    <CardTitle className="text-lg font-bold">Lista de Acciones</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                    <Select value={String(actionId)} onValueChange={(value) => setActionId(Number(value))}>
+                        <SelectTrigger className="w-full h-11 border-border/60 bg-background/50 focus:ring-1 focus:ring-foreground/10">
+                            <SelectValue placeholder="Seleccionar Acción para ver sus Roles" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="0">Seleccionar Acción</SelectItem>
+                            {actions.map((a) => (
+                                <SelectItem key={a.action_id} value={String(a.action_id)}>
+                                    {a.action}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+
+                    <div className="rounded-xl border border-border/40 overflow-hidden bg-background/40">
+                        <ScpGrid
+                            configuration={{
+                                ...rolesConfig,
+                                onSelectionChanged: (e: any) => {
+                                    const selectedRow = e.selectedRowsData[0]
+                                    if (selectedRow) setRoleId(selectedRow.role_id)
+                                },
+                            }}
+                        />
+                    </div>
+                </CardContent>
+            </Card>
+
+            <Card className="border-border/50 shadow-sm transition-all hover:shadow-md animate-in fade-in duration-500">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+                    <CardTitle className="text-lg font-bold">Asignar Acciones al Rol</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <div className="rounded-xl border border-border/40 overflow-hidden bg-background/40">
+                        <ScpGrid
+                            key={`role-actions-${roleId}`}
+                            configuration={{
+                                ...actionsConfig,
+                                onSaving: saveAssignments,
+                            }}
+                            gridRef={actionsToRolesDatagrid}
+                        />
+                    </div>
+                </CardContent>
+            </Card>
         </div>
     )
 }

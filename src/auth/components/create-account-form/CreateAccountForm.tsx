@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react'
+import { toast } from 'sonner'
 import { Link, useNavigate } from 'react-router-dom'
 import { createAccount } from '../../services'
 import './CreateAccountForm.scss'
@@ -16,7 +17,7 @@ export const CreateAccountForm = (): JSX.Element => {
         async (e: React.FormEvent) => {
             e.preventDefault()
             if (password !== confirmPassword) {
-                alert('Passwords do not match')
+                toast.error('Passwords do not match')
                 return
             }
             setLoading(true)
@@ -27,32 +28,32 @@ export const CreateAccountForm = (): JSX.Element => {
             if (result.isOk) {
                 navigate('/login')
             } else {
-                alert(result.message)
+                toast.error(result.message)
             }
         },
         [navigate, email, password, confirmPassword],
     )
 
     return (
-        <form className={'create-account-form space-y-4'} onSubmit={onSubmit}>
-            <Input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} className="h-10" required />
-            <Input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} className="h-10" required />
+        <form className="space-y-4" onSubmit={onSubmit}>
+            <Input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} className="h-10 border-border/50 focus-visible:ring-1 focus-visible:ring-foreground/20 transition-all" required />
+            <Input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} className="h-10 border-border/50 focus-visible:ring-1 focus-visible:ring-foreground/20 transition-all" required />
             <Input
                 type="password"
                 placeholder="Confirm Password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                className="h-10"
+                className="h-10 border-border/50 focus-visible:ring-1 focus-visible:ring-foreground/20 transition-all"
                 required
             />
-            <div className="policy-info">
-                By creating an account, you agree to the <Link to="#">Terms of Service</Link> and <Link to="#">Privacy Policy</Link>
+            <div className="text-sm text-muted-foreground">
+                By creating an account, you agree to the <Link to="#" className="font-medium hover:text-foreground transition-colors">Terms of Service</Link> and <Link to="#" className="font-medium hover:text-foreground transition-colors">Privacy Policy</Link>
             </div>
-            <Button type="submit" disabled={loading} className="h-10 w-full">
+            <Button type="submit" disabled={loading} className="h-10 w-full bg-foreground text-background hover:bg-foreground/90 active:scale-[0.98] transition-all">
                 {loading ? 'Cargando...' : 'Create a new account'}
             </Button>
-            <div className={'login-link'}>
-                Have an account? <Link to={'/login'}>Sign In</Link>
+            <div className="text-center text-sm mt-4">
+                Have an account? <Link to={'/login'} className="text-muted-foreground hover:text-foreground transition-colors font-medium">Sign In</Link>
             </div>
         </form>
     )

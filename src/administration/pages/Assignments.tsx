@@ -1,7 +1,7 @@
 import { AssignmentsTabsOptions } from '../enums'
 import { ContentTab } from '../interfaces'
 import { useState } from 'react'
-import { ActionsToRoles, UsersToRoles, MenuOptionsToRoles } from '../components'
+import { ActionsToRoles, UsersToRoles, MenuOptionsToRoles, TablesToRoles } from '../components'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { ShieldCheck, UserRoundCog, ListChecks, Table2 } from 'lucide-react'
 
@@ -23,11 +23,6 @@ export const Assignments = () => {
             id: AssignmentsTabsOptions.MENU_OPTIONS,
             text: 'Opciones de Menú',
             icon: <ListChecks className="h-4 w-4" />,
-        },
-        {
-            id: AssignmentsTabsOptions.RECORDS,
-            text: 'Registros',
-            icon: <Table2 className="h-4 w-4" />,
         },
     ]
 

@@ -1,5 +1,7 @@
+import { toast } from 'sonner'
+
 const showErrorMessage = (message: string) => {
-    alert(message)
+    toast.error(message)
     console.error(message)
 }
 

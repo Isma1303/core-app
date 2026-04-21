@@ -9,7 +9,7 @@ export const useRolesDataGridConfig = (rolService: DataService<Role>) => {
     const obtenerConfig = async (dataSource: any): Promise<any> => {
         const config: any = {
             dataSource: dataSource,
-            dataId: 'rol_id',
+            dataId: 'role_id',
             columns: [
                 {
                     dataField: 'role',

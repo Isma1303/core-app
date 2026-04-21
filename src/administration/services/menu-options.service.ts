@@ -101,4 +101,13 @@ export class MenuOptionsService implements DataService<MenuOption> {
             throw new Error(error.message)
         }
     }
+
+    public async getNestedMenuOptions(): Promise<MenuOption[]> {
+        try {
+            const { data: apiResponse } = await serverAPI.get(`${this.URL_BASE}/getNestedMenuOptions`)
+            return apiResponse.data
+        } catch (error: any) {
+            throw new Error(error.message)
+        }
+    }
 }

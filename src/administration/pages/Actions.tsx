@@ -21,9 +21,17 @@ export const Actions = (): JSX.Element => {
     }, [])
 
     return (
-        <>
-            <h2 className="content-block">Acciones</h2>
-            {actionsConfiguration && <ScpGrid configuration={actionsConfiguration!} />}
-        </>
+        <div className="space-y-4 animate-in fade-in duration-500">
+            <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between px-4">
+                <div>
+                    <h2 className="text-2xl font-semibold tracking-tight text-foreground">Acciones</h2>
+                    <p className="text-muted-foreground text-sm">Define las acciones atómicas que los usuarios pueden ejecutar.</p>
+                </div>
+            </div>
+
+            <div className="px-4 pb-8">
+                {actionsConfiguration && <ScpGrid configuration={actionsConfiguration!} />}
+            </div>
+        </div>
     )
 }

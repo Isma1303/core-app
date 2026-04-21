@@ -1,77 +1,57 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { UsersService } from '../services'
 import { User } from '../interfaces'
 import { UserChangePasswordForm, UserForm } from '../components'
 import { Button } from '@/components/ui/button'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { Plus, UsersRound } from 'lucide-react'
+import { Plus } from 'lucide-react'
+import { ScpGrid } from '../../shared/components'
+import { useUsersDataGridConfig } from '../hooks'
+import { customStoreBuilder } from '@/shared/builders/custom-store-builder.builder'
+import { ScpGridConfig } from '@/shared/interfaces/scp-grid-config.interface'
 
 export const Users = () => {
-    const [userData, setUserData] = useState<User | null>(null)
-    const [showUserForm, setShowUserForm] = useState(false)
-    const [showPasswordChangeForm, setShowPasswordChangeForm] = useState(false)
+    const usersService = new UsersService()
+    const datagridRef = useRef<any>(null)
+    const { obtenerConfig, customButtonClicked, userData, showPasswordChangeForm, enableUserForm, onRowAffected, showUserForm, unmountForm } =
+        useUsersDataGridConfig(usersService, datagridRef)
 
-    const unmountForm = () => {
-        setUserData(null)
-        setShowUserForm(false)
-        setShowPasswordChangeForm(false)
-    }
+    const usersCustomStore = customStoreBuilder<User>(usersService, 'user_id')
+    const [usersConfiguration, setUsersConfiguration] = useState<ScpGridConfig | null>(null)
 
-    const onRowAffected = () => {
-        unmountForm()
-        // Here we would reload data
-    }
+    useEffect(() => {
+        obtenerConfig(usersCustomStore).then((config) => {
+            config.customButtonClicked = customButtonClicked
+            config.onEditClick = (record: Record<string, any>) => enableUserForm({ record })
+            config.allowCreate = false // We handle creation with our own button
+            setUsersConfiguration(config)
+        })
+    }, [])
 
     return (
-        <div className="space-y-4 p-4">
-            <h2 className="content-block">Usuarios</h2>
-
-            <div className="dx-card space-y-3 p-4">
-                <p className="text-sm text-muted-foreground">Módulo de Usuarios - Grid (DevExtreme) eliminado.</p>
+        <div className="space-y-4 animate-in fade-in duration-500">
+            <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between px-4">
+                <div>
+                    <h2 className="text-2xl font-semibold tracking-tight text-foreground">Usuarios</h2>
+                    <p className="text-muted-foreground text-sm">Administra los usuarios del sistema y sus accesos.</p>
+                </div>
                 <Button
-                    onClick={() => {
-                        setUserData({} as User)
-                        setShowUserForm(true)
-                    }}
+                    onClick={() => enableUserForm(true)}
+                    className="bg-foreground text-background hover:bg-foreground/90 transition-all active:scale-[0.98]"
                 >
-                    <Plus className="h-4 w-4" />
+                    <Plus className="mr-2 h-4 w-4" />
                     Nuevo Usuario
                 </Button>
             </div>
 
-            <div className="dx-card p-4">
-                <Table>
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead>Usuario</TableHead>
-                            <TableHead>Nombre</TableHead>
-                            <TableHead>Email</TableHead>
-                            <TableHead>Acciones</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        <TableRow>
-                            <TableCell colSpan={4} className="py-10 text-center text-muted-foreground">
-                                <div className="mx-auto flex w-fit items-center gap-2 rounded-lg border border-border bg-muted/40 px-4 py-2">
-                                    <UsersRound className="h-4 w-4" />
-                                    Listo para migración a shadcn/ui DataTable
-                                </div>
-                            </TableCell>
-                        </TableRow>
-                    </TableBody>
-                </Table>
-            </div>
+            <div className="px-4 pb-8">{usersConfiguration && <ScpGrid ref={datagridRef} configuration={usersConfiguration!} />}</div>
 
             <Dialog open={showUserForm} onOpenChange={(open) => !open && unmountForm()}>
                 <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-3xl">
                     <DialogHeader>
                         <DialogTitle>{userData?.user_id ? 'Actualizar usuario' : 'Crear usuario'}</DialogTitle>
                     </DialogHeader>
-                    {showUserForm && <UserForm user={userData!} rowUpdated={onRowAffected} closePopup={unmountForm} />}
-                    <Button variant="outline" onClick={unmountForm}>
-                        Cerrar
-                    </Button>
+                    {showUserForm && <UserForm user={userData!} rowUpdated={() => onRowAffected(true)} closePopup={unmountForm} />}
                 </DialogContent>
             </Dialog>
 
@@ -80,10 +60,9 @@ export const Users = () => {
                     <DialogHeader>
                         <DialogTitle>Actualizar contraseña</DialogTitle>
                     </DialogHeader>
-                    {showPasswordChangeForm && <UserChangePasswordForm user={userData!} rowUpdated={onRowAffected} closePopup={unmountForm} />}
-                    <Button variant="outline" onClick={unmountForm}>
-                        Cerrar
-                    </Button>
+                    {showPasswordChangeForm && (
+                        <UserChangePasswordForm user={userData!} rowUpdated={() => onRowAffected(true)} closePopup={unmountForm} />
+                    )}
                 </DialogContent>
             </Dialog>
         </div>

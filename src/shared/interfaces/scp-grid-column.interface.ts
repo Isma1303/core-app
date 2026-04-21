@@ -16,6 +16,7 @@ export interface ScpGridColumn {
     caption?: string
     dataType?: 'string' | 'number' | 'boolean' | 'date'
     allowFiltering?: boolean
+    allowEditing?: boolean
     lookup?: ScpGridLookup
     validationRules?: ScpGridValidationRule[]
 }

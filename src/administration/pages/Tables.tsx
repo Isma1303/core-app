@@ -21,9 +21,17 @@ export const Tables = (): JSX.Element => {
     }, [])
 
     return (
-        <>
-            <h2 className="content-block">Tablas</h2>
-            {tablesConfiguration && <ScpGrid configuration={tablesConfiguration!} />}
-        </>
+        <div className="space-y-4 animate-in fade-in duration-500">
+            <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between px-4">
+                <div>
+                    <h2 className="text-2xl font-semibold tracking-tight text-foreground">Tablas</h2>
+                    <p className="text-muted-foreground text-sm">Configura y visualiza las tablas del sistema y su metadata.</p>
+                </div>
+            </div>
+
+            <div className="px-4 pb-8">
+                {tablesConfiguration && <ScpGrid configuration={tablesConfiguration!} />}
+            </div>
+        </div>
     )
 }

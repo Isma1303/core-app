@@ -30,7 +30,7 @@ export class UsersToRolesService implements DataService<UserToRole> {
         try {
             const { data: apiResponse } = await serverAPI.get(`${this.URL_BASE}/getRoles/${userId}`)
 
-            return apiResponse.data
+            return apiResponse?.data || []
         } catch (error: any) {
             throw new Error(error.message)
         }
@@ -39,7 +39,7 @@ export class UsersToRolesService implements DataService<UserToRole> {
         try {
             const { data: apiResponse } = await serverAPI.get(`${this.URL_BASE}/getAssignedRoles/${userId}`)
 
-            return apiResponse.data
+            return apiResponse?.data || []
         } catch (error: any) {
             throw new Error(error.message)
         }
@@ -49,7 +49,7 @@ export class UsersToRolesService implements DataService<UserToRole> {
         try {
             const { data: apiResponse } = await serverAPI.get(`${this.URL_BASE}/getUsers/${roleId}`)
 
-            return apiResponse.data
+            return apiResponse?.data || []
         } catch (error: any) {
             throw new Error(error.message)
         }

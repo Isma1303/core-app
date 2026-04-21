@@ -20,7 +20,7 @@ export class RoleService implements DataService<Role> {
                 headers: { offset, limit, orden },
             })
 
-            return apiResponse.data
+            return apiResponse?.data || []
         } catch (error: any) {
             throw new Error(error.message)
         }

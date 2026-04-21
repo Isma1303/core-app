@@ -1,21 +1,29 @@
 import React, { useEffect, useMemo } from 'react'
-import { Home, List, User, Settings, CheckSquare, Layout, ChevronRight, HelpCircle } from 'lucide-react'
+import * as LucideIcons from 'lucide-react'
 import { cn } from '@/lib/utils'
 import './SideNavigationMenu.scss'
 import type { SideNavigationMenuProps } from '../../../types'
 import { useNavigationStore } from '../../stores'
 
-const iconMap: Record<string, React.ReactNode> = {
-    home: <Home className="w-5 h-5" />,
-    tasks: <CheckSquare className="w-5 h-5" />,
-    profile: <User className="w-5 h-5" />,
-    settings: <Settings className="w-5 h-5" />,
-    administration: <Layout className="w-5 h-5" />,
-}
-
 const getIcon = (iconName?: string) => {
-    if (!iconName) return <List className="w-5 h-5" />
-    return iconMap[iconName.toLowerCase()] || <List className="w-5 h-5" />
+    if (!iconName) return <LucideIcons.List className="w-5 h-5" />
+
+    if (iconName.includes('bi-') || iconName.startsWith('bi ')) {
+        return <i className={cn(iconName, 'text-[20px] w-5 h-5 flex items-center justify-center')} />
+    }
+
+    const pascalName = iconName
+        .split('-')
+        .map((part) => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
+        .join('')
+
+    const IconComponent = (LucideIcons as any)[pascalName] || (LucideIcons as any)[iconName]
+
+    if (IconComponent) {
+        return <IconComponent className="w-5 h-5" />
+    }
+
+    return <LucideIcons.List className="w-5 h-5" />
 }
 
 export const SideNavigationMenu = (props: React.PropsWithChildren<SideNavigationMenuProps>) => {
@@ -23,6 +31,7 @@ export const SideNavigationMenu = (props: React.PropsWithChildren<SideNavigation
     const navigation = useNavigationStore((state) => state.navigation)
     const loadNavigation = useNavigationStore((state) => state.loadNavigation)
     const isLoadingPaths = useNavigationStore((state) => state.isLoadingPaths)
+    const [expandedItems, setExpandedItems] = React.useState<Record<string, boolean>>({})
 
     useEffect(() => {
         loadNavigation()
@@ -34,6 +43,62 @@ export const SideNavigationMenu = (props: React.PropsWithChildren<SideNavigation
             path: item.path && !/^\//.test(item.path) ? `/${item.path}` : item.path,
         }))
     }, [navigation])
+
+    const toggleExpand = (key: string, e: React.MouseEvent) => {
+        e.stopPropagation()
+        setExpandedItems((prev) => ({
+            ...prev,
+            [key]: !prev[key],
+        }))
+    }
+
+    const renderMenuItem = (item: any, index: number, level = 0) => {
+        const hasChildren = item.items && item.items.length > 0
+        const itemKey = item.menu_option_id ?? `${item.path ?? item.text_key ?? item.text ?? 'menu-item'}-${index}`
+        const isExpanded = expandedItems[itemKey]
+
+        return (
+            <React.Fragment key={itemKey}>
+                <button
+                    onClick={(e) => {
+                        if (hasChildren && !item.path) {
+                            toggleExpand(itemKey, e)
+                        } else {
+                            selectedItemChanged({ itemData: item } as any)
+                        }
+                    }}
+                    className={cn(
+                        'group flex w-full items-center gap-3 rounded-md px-3 py-2 text-muted-foreground hover:bg-accent hover:text-foreground transition-all duration-200',
+                        compactMode ? 'justify-center' : 'justify-start',
+                        level > 0 && !compactMode && 'pl-11',
+                        isExpanded && 'bg-accent/50 text-foreground',
+                    )}
+                    title={compactMode ? item.text || item.text_key : ''}
+                >
+                    <span className="flex-shrink-0">{getIcon(item.icon)}</span>
+                    {!compactMode && <span className="text-sm font-medium truncate">{item.text || item.text_key}</span>}
+                    {!compactMode && hasChildren && (
+                        <LucideIcons.ChevronRight
+                            className={cn(
+                                'w-4 h-4 ml-auto opacity-50 group-hover:opacity-100 transition-transform duration-200',
+                                isExpanded && 'rotate-90 opacity-100',
+                            )}
+                            onClick={(e) => {
+                                if (item.path) {
+                                    toggleExpand(itemKey, e)
+                                }
+                            }}
+                        />
+                    )}
+                </button>
+                {!compactMode && hasChildren && isExpanded && (
+                    <div className="mt-1 space-y-1 animate-in fade-in slide-in-from-top-1 duration-200">
+                        {item.items.map((subItem: any, subIndex: number) => renderMenuItem(subItem, subIndex, level + 1))}
+                    </div>
+                )}
+            </React.Fragment>
+        )
+    }
 
     return (
         <div
@@ -47,40 +112,9 @@ export const SideNavigationMenu = (props: React.PropsWithChildren<SideNavigation
                         <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
                     </div>
                 ) : (
-                    <nav className="space-y-1">
-                        {items.map((item: any, index: number) => {
-                            const itemKey = item.opcion_menu_id ?? `${item.path ?? item.text_key ?? item.text ?? 'menu-item'}-${index}`
-
-                            return (
-                                <button
-                                    key={itemKey}
-                                    onClick={() => selectedItemChanged({ itemData: item } as any)}
-                                    className={cn(
-                                        'group flex w-full items-center gap-3 rounded-md px-3 py-2 text-muted-foreground hover:bg-accent hover:text-foreground',
-                                        compactMode ? 'justify-center' : 'justify-start',
-                                    )}
-                                    title={compactMode ? item.text || item.text_key : ''}
-                                >
-                                    <span className="flex-shrink-0">{getIcon(item.icon)}</span>
-                                    {!compactMode && <span className="text-sm font-medium truncate">{item.text || item.text_key}</span>}
-                                    {!compactMode && item.items && item.items.length > 0 && (
-                                        <ChevronRight className="w-4 h-4 ml-auto opacity-50 group-hover:opacity-100" />
-                                    )}
-                                </button>
-                            )
-                        })}
-                    </nav>
+                    <nav className="space-y-1">{items.map((item: any, index: number) => renderMenuItem(item, index))}</nav>
                 )}
             </div>
-
-            {!compactMode && (
-                <div className="mt-auto border-t border-border p-3">
-                    <button className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-foreground">
-                        <HelpCircle className="w-5 h-5" />
-                        <span>Support</span>
-                    </button>
-                </div>
-            )}
         </div>
     )
 }

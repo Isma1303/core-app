@@ -7,22 +7,13 @@ export const useMenuOptionsDataGridConfig = (menuOptionsService: DataService<Men
     const userInfo = useAuthStore((state) => state.userInfo)
 
     const obtenerConfig = async (dataSource: any): Promise<any> => {
+        const modelProperties = await menuOptionsService.getModelProperties()
+        const table = modelProperties?.tableName.toUpperCase()
+
         const config: any = {
             dataSource: dataSource,
             dataId: 'menu_option_id',
             columns: [
-                {
-                    dataField: 'menu_option_id',
-                    caption: 'ID',
-                    allowFiltering: true,
-                    dataType: 'number',
-                    validationRules: [
-                        {
-                            type: 'required',
-                            message: 'El campo es requerido',
-                        },
-                    ],
-                },
                 {
                     dataField: 'menu_option',
                     caption: 'Opción de menú',
@@ -114,8 +105,12 @@ export const useMenuOptionsDataGridConfig = (menuOptionsService: DataService<Men
             margin: 'mx-3',
             editMode: 'row',
         }
-        const modelProperties = await menuOptionsService.getModelProperties()
-        const table = modelProperties?.tableName.toUpperCase()
+
+        const totalRecords = await menuOptionsService.getTotalRecords()
+        if (totalRecords > 0) {
+            const menuOptionsLookup = await menuOptionsService.getRecords(0, totalRecords).catch(() => [])
+            config.columns[1].lookup.dataSource = menuOptionsLookup
+        }
 
         if (!userInfo?.actions.hasOwnProperty(table!)) {
             config.dataSource = []

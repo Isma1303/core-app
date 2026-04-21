@@ -1,12 +1,25 @@
 /* eslint-disable no-prototype-builtins */
 import { DataService } from '../../shared/interfaces'
 import { useAuthStore } from '../../auth'
-import { Action } from '../interfaces'
+import { Action, Table } from '../interfaces'
+import { TablesService } from '../services'
 
 export const useActionsDataGridConfig = (actionsService: DataService<Action>) => {
     const userInfo = useAuthStore((state) => state.userInfo)
 
     const obtenerConfig = async (dataSource: any): Promise<any> => {
+        const tablesService = new TablesService()
+        let tablesLookup: Table[] = []
+
+        try {
+            const totalRecords = await tablesService.getTotalRecords()
+            if (totalRecords > 0) {
+                tablesLookup = await tablesService.getRecords(0, totalRecords)
+            }
+        } catch (error) {
+            console.error('Error loading tables for lookup:', error)
+        }
+
         const config: any = {
             dataSource: dataSource,
             dataId: 'action_id',
@@ -39,7 +52,7 @@ export const useActionsDataGridConfig = (actionsService: DataService<Action>) =>
                         },
                     ],
                     lookup: {
-                        dataSource: [],
+                        dataSource: tablesLookup,
                         valueExpr: 'table_id',
                         displayExpr: 'table_name',
                     },

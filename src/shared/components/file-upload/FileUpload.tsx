@@ -4,6 +4,7 @@ import { DragEvent, forwardRef, useImperativeHandle, useRef, useState } from 're
 import './FileUpload.scss'
 import { Button } from '@/components/ui/button'
 import { CheckCircle2, UploadCloud } from 'lucide-react'
+import { toast } from 'sonner'
 
 interface Props {
     onFileProcessed: (file: File) => Promise<void>
@@ -33,7 +34,7 @@ export const FileUpload = forwardRef<FileUploadRef, Props>(({ onFileProcessed }:
         const files = event.dataTransfer.files
 
         if (files[0].type !== 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-            return alert('Sólo se permiten subir archivos con extensión xlsx')
+            return toast.error('Sólo se permiten subir archivos con extensión xlsx')
 
         const activeFile = files[0]
 
@@ -47,7 +48,7 @@ export const FileUpload = forwardRef<FileUploadRef, Props>(({ onFileProcessed }:
 
         setXlsxFile(newFile)
         setEnableFinishButton(true)
-        alert('Archivo preparado exitosamente')
+        toast.success('Archivo preparado exitosamente')
     }
 
     const onFileSelected = async (event: any) => {
@@ -56,7 +57,7 @@ export const FileUpload = forwardRef<FileUploadRef, Props>(({ onFileProcessed }:
         const files = event.target.files
 
         if (files[0].type !== 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-            return alert('Sólo se permiten subir archivos con extensión xlsx')
+            return toast.error('Sólo se permiten subir archivos con extensión xlsx')
 
         const activeFile = files[0]
         setXlsxFile(activeFile)
@@ -68,7 +69,7 @@ export const FileUpload = forwardRef<FileUploadRef, Props>(({ onFileProcessed }:
         setFileName(activeFile.name)
 
         setEnableFinishButton(true)
-        alert('Archivo preparado exitosamente')
+        toast.success('Archivo preparado exitosamente')
     }
 
     const cloneFile = (originalFile: File): File => new File([originalFile], originalFile.name, { type: originalFile.type })
