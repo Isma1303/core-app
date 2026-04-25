@@ -1,5 +1,4 @@
-
-
+@use "sass:color";
 
 .side-navigation-menu {
     display: flex;
@@ -80,7 +79,7 @@
                     }
 
                     &:not(.dx-state-focused) > .dx-treeview-item.dx-state-hover {
-                        background-color: lighten(white, 4);
+                        background-color: color.adjust(white, $lightness: 4%);
                     }
                 }
             }
