@@ -8,6 +8,8 @@ import { toast } from 'sonner'
 
 interface Props {
     onFileProcessed: (file: File) => Promise<void>
+    accept?: string
+    acceptLabel?: string
 }
 
 // Definir los métodos que estarán disponibles en la referencia
@@ -15,7 +17,7 @@ export interface FileUploadRef {
     reset: () => void
 }
 
-export const FileUpload = forwardRef<FileUploadRef, Props>(({ onFileProcessed }: Props, ref): JSX.Element => {
+export const FileUpload = forwardRef<FileUploadRef, Props>(({ onFileProcessed, accept = '.xlsx', acceptLabel = 'xlsx' }: Props, ref): JSX.Element => {
     const inputFile = useRef<HTMLInputElement>(null)
     const [enableFinishButton, setEnableFinishButton] = useState<boolean>(false)
     const [fileName, setFileName] = useState<string>('')
@@ -29,12 +31,23 @@ export const FileUpload = forwardRef<FileUploadRef, Props>(({ onFileProcessed }:
         event.preventDefault()
     }
 
+    const validateFileType = (file: File): boolean => {
+        if (!accept) return true
+        const allowedTypes = accept.split(',').map((t) => t.trim().toLowerCase())
+        const fileExtension = `.${file.name.split('.').pop()?.toLowerCase()}`
+        const fileMimeType = file.type.toLowerCase()
+
+        return allowedTypes.some((type) => {
+            const normalizedType = type.startsWith('.') ? type : `.${type}`
+            return fileExtension === normalizedType || fileMimeType === type
+        })
+    }
+
     const onDrop = (event: DragEvent<HTMLDivElement>) => {
         event.preventDefault()
         const files = event.dataTransfer.files
 
-        if (files[0].type !== 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-            return toast.error('Sólo se permiten subir archivos con extensión xlsx')
+        if (!validateFileType(files[0])) return toast.error(`Sólo se permiten subir archivos con extensión ${acceptLabel}`)
 
         const activeFile = files[0]
 
@@ -56,8 +69,7 @@ export const FileUpload = forwardRef<FileUploadRef, Props>(({ onFileProcessed }:
 
         const files = event.target.files
 
-        if (files[0].type !== 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-            return toast.error('Sólo se permiten subir archivos con extensión xlsx')
+        if (!validateFileType(files[0])) return toast.error(`Sólo se permiten subir archivos con extensión ${acceptLabel}`)
 
         const activeFile = files[0]
         setXlsxFile(activeFile)
@@ -106,7 +118,7 @@ export const FileUpload = forwardRef<FileUploadRef, Props>(({ onFileProcessed }:
                     onClick={() => inputFile.current?.click()}
                 >
                     <p className="text-sm text-muted-foreground">Arrastre el archivo aquí</p>
-                    <input type="file" onChange={onFileSelected} accept=".xlsx" className="input-file" ref={inputFile} />
+                    <input type="file" onChange={onFileSelected} accept={accept} className="input-file" ref={inputFile} />
                     <Button type="button" variant="outline">
                         Seleccione el archivo
                     </Button>

@@ -29,6 +29,9 @@ export const LoginForm = (): JSX.Element => {
     return (
         <form className="flex flex-col gap-4 w-full" onSubmit={onSubmit}>
             <div className="space-y-4">
+                <div>
+                    <img src="/ddg_logo.webp" alt="Logo" className="w-48 mx-auto mb-4" />
+                </div>
                 <div className="relative w-full">
                     <UserRound className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground pointer-events-none" />
                     <Input
@@ -53,7 +56,7 @@ export const LoginForm = (): JSX.Element => {
                         disabled={loading}
                     />
                 </div>
-                <Button type="submit" disabled={loading} className="w-full h-11 text-sm font-semibold transition-transform active:scale-[0.98] mt-2 bg-foreground text-background hover:bg-foreground/90">
+                <Button type="submit" disabled={loading} className="w-full h-11 text-sm font-semibold transition-transform active:scale-[0.98] mt-2 bg-background-primary hover:bg-background-primary/90">
                     {loading ? 'Cargando...' : (
                         <div className="flex items-center justify-center">
                             <LogIn className="mr-2 w-5 h-5" />

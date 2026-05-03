@@ -15,6 +15,7 @@ export interface ScpGridConfig {
     customButtons?: ScpGridToolbarButton[]
     customButtonClicked?: (buttonName: string) => Promise<void> | void
     onEditClick?: (record: Record<string, any>) => void
+    onDeleteClick?: (record: Record<string, any>) => void
     fileName?: string
     margin?: string
     [key: string]: any

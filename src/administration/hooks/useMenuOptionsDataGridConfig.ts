@@ -1,7 +1,8 @@
 /* eslint-disable no-prototype-builtins */
-import { DataService } from '../../shared/interfaces'
+import { DataService, ScpGridConfig } from '../../shared/interfaces'
 import { useAuthStore } from '../../auth'
 import { MenuOption } from '../interfaces'
+import { buildLookupDataSource } from '../../shared/utils/custom-store.util'
 
 export const useMenuOptionsDataGridConfig = (menuOptionsService: DataService<MenuOption>) => {
     const userInfo = useAuthStore((state) => state.userInfo)
@@ -10,7 +11,7 @@ export const useMenuOptionsDataGridConfig = (menuOptionsService: DataService<Men
         const modelProperties = await menuOptionsService.getModelProperties()
         const table = modelProperties?.tableName.toUpperCase()
 
-        const config: any = {
+        const config: ScpGridConfig = {
             dataSource: dataSource,
             dataId: 'menu_option_id',
             columns: [
@@ -35,14 +36,8 @@ export const useMenuOptionsDataGridConfig = (menuOptionsService: DataService<Men
                     dataField: 'parent_menu_option_id',
                     caption: 'Opción de menú padre',
                     allowFiltering: true,
-                    validationRules: [
-                        {
-                            type: 'required',
-                            message: 'El campo es requerido',
-                        },
-                    ],
                     lookup: {
-                        dataSource: [],
+                        dataSource: buildLookupDataSource(menuOptionsService),
                         valueExpr: 'menu_option_id',
                         displayExpr: 'menu_option',
                     },
@@ -97,19 +92,13 @@ export const useMenuOptionsDataGridConfig = (menuOptionsService: DataService<Men
             allowDelete: false,
             allowCreate: false,
             allowExportPDF: true,
-            fileName: 'Acciones',
+            fileName: 'Opciones de Menú',
             allowExportExcel: true,
             remoteOperations: { grouping: false, filtering: true, paging: true },
             deferredLoading: true,
             buttonsInLastColumn: true,
             margin: 'mx-3',
             editMode: 'row',
-        }
-
-        const totalRecords = await menuOptionsService.getTotalRecords()
-        if (totalRecords > 0) {
-            const menuOptionsLookup = await menuOptionsService.getRecords(0, totalRecords).catch(() => [])
-            config.columns[1].lookup.dataSource = menuOptionsLookup
         }
 
         if (!userInfo?.actions.hasOwnProperty(table!)) {

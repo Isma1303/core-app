@@ -7,9 +7,9 @@ import { useAuthStore } from './auth'
 
 export const Content = (): JSX.Element => {
     return (
-        <SideNavOuterToolbar 
-        // title={appInfo.title}
-        title=''
+        <SideNavOuterToolbar
+            // title={appInfo.title}
+            title=""
         >
             <Routes>
                 {routes.map(({ path, element: RouteComponent }) => (

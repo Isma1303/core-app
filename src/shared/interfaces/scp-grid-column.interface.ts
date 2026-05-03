@@ -1,5 +1,7 @@
+import { ReactNode } from 'react'
+
 export interface ScpGridLookup {
-    dataSource?: Record<string, any>[]
+    dataSource?: Record<string, any>[] | (() => Promise<any[]>) | any
     valueExpr?: string
     displayExpr?: string
 }
@@ -19,4 +21,5 @@ export interface ScpGridColumn {
     allowEditing?: boolean
     lookup?: ScpGridLookup
     validationRules?: ScpGridValidationRule[]
+    cellTemplate?: (row: Record<string, any>) => ReactNode
 }

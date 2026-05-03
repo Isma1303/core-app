@@ -7,3 +7,5 @@ export interface MenuOption {
     items?: MenuOption[]
     parent_menu_option_id: number
 }
+
+export interface MenuOptionNew extends Omit<MenuOption, 'menu_option_id'> {}

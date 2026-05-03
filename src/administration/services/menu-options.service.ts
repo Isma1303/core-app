@@ -1,6 +1,6 @@
 import { serverAPI } from '../../api/server.api'
 import { Condition, DataService, ModelProperties } from '../../shared/interfaces'
-import { MenuOption } from '../interfaces'
+import { MenuOption, MenuOptionNew } from '../interfaces'
 
 export class MenuOptionsService implements DataService<MenuOption> {
     private readonly URL_BASE: string = '/menu_option'
@@ -36,7 +36,7 @@ export class MenuOptionsService implements DataService<MenuOption> {
         }
     }
 
-    public async createRecord(data: MenuOption | never[]): Promise<MenuOption | never[]> {
+    public async createRecord(data: MenuOptionNew | never[]): Promise<MenuOption | never[]> {
         try {
             const response = await serverAPI.post(`${this.URL_BASE}`, data)
 

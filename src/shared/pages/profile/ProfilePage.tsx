@@ -119,7 +119,7 @@ export const ProfilePage = (): JSX.Element => {
                             </div>
                             <Button
                                 type="submit"
-                                className="w-full h-10 bg-foreground text-background hover:bg-foreground/90 active:scale-[0.98] transition-all"
+                                className="w-full h-10 bg-background-primary hover:bg-background-primary/90 active:scale-[0.98] transition-all"
                             >
                                 Guardar Cambios
                             </Button>

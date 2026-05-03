@@ -12,23 +12,6 @@ import { cn } from '@/lib/utils'
 
 const DEFAULT_PAGE_SIZES = [5, 10, 20]
 
-const normalizeText = (value: any): string =>
-    String(value ?? '')
-        .toLowerCase()
-        .trim()
-
-const formatValue = (row: Record<string, any>, column: ScpGridColumn): string => {
-    const value = row[column.dataField]
-
-    if (column.lookup && Array.isArray(column.lookup.dataSource) && column.lookup.valueExpr && column.lookup.displayExpr) {
-        const lookupItem = column.lookup.dataSource.find((item) => item[column.lookup?.valueExpr as string] === value)
-        if (lookupItem) return String(lookupItem[column.lookup.displayExpr])
-    }
-
-    if (typeof value === 'boolean') return value ? 'Si' : 'No'
-    return String(value ?? '-')
-}
-
 export const ScpGrid = forwardRef(({ configuration }: ScpGridProps, ref: any) => {
     const columns = configuration.columns ?? []
     const pageRecords = configuration.pageRecords?.length ? configuration.pageRecords : DEFAULT_PAGE_SIZES
@@ -47,10 +30,61 @@ export const ScpGrid = forwardRef(({ configuration }: ScpGridProps, ref: any) =>
     const [selectedId, setSelectedId] = useState<string | number | null>(null)
     const [selectedRows, setSelectedRows] = useState<Record<string, any>[]>([])
     const [changes, setChanges] = useState<Record<string, any>>({})
+    const [lookupData, setLookupData] = useState<Record<string, any[]>>({})
     const showSelectionColumn = Boolean(configuration.showSelectionColumn)
 
     const isStoreLike = configuration.dataSource && typeof configuration.dataSource.load === 'function'
     const hasActions = Boolean(configuration.allowUpdate || configuration.allowDelete)
+
+    const fetchLookupData = async () => {
+        const promises = columns.map(async (column) => {
+            if (column.lookup) {
+                if (Array.isArray(column.lookup.dataSource)) {
+                    return { field: column.dataField, data: column.lookup.dataSource }
+                } else if (typeof column.lookup.dataSource === 'function') {
+                    try {
+                        const data = await column.lookup.dataSource()
+                        return { field: column.dataField, data }
+                    } catch (error) {
+                        console.error(`Error fetching lookup data for ${column.dataField}:`, error)
+                        return { field: column.dataField, data: [] }
+                    }
+                }
+            }
+            return null
+        })
+
+        const results = await Promise.all(promises)
+        const newLookupData: Record<string, any[]> = {}
+        results.forEach((result) => {
+            if (result) {
+                newLookupData[result.field] = result.data
+            }
+        })
+        setLookupData(newLookupData)
+    }
+
+    useEffect(() => {
+        fetchLookupData()
+    }, [columns])
+
+    const normalizeText = (value: any): string =>
+        String(value ?? '')
+            .toLowerCase()
+            .trim()
+
+    const formatValue = (row: Record<string, any>, column: ScpGridColumn): string => {
+        const value = row[column.dataField]
+        const dataSource = lookupData[column.dataField] || (Array.isArray(column.lookup?.dataSource) ? column.lookup?.dataSource : [])
+
+        if (column.lookup && dataSource.length > 0 && column.lookup.valueExpr && column.lookup.displayExpr) {
+            const lookupItem = dataSource.find((item) => item[column.lookup?.valueExpr as string] === value)
+            if (lookupItem) return String(lookupItem[column.lookup.displayExpr])
+        }
+
+        if (typeof value === 'boolean') return value ? 'Si' : 'No'
+        return String(value ?? '-')
+    }
 
     useImperativeHandle(ref, () => ({
         getSelectedRowsData: () => selectedRows,
@@ -143,23 +177,32 @@ export const ScpGrid = forwardRef(({ configuration }: ScpGridProps, ref: any) =>
     )
 
     const getLookupValue = (column: ScpGridColumn, value: any): string => {
-        if (!column.lookup?.dataSource || !column.lookup.valueExpr || !column.lookup.displayExpr) return String(value ?? '')
+        const dataSource = lookupData[column.dataField] || (Array.isArray(column.lookup?.dataSource) ? column.lookup?.dataSource : [])
+        if (!dataSource.length || !column.lookup?.valueExpr || !column.lookup.displayExpr) return String(value ?? '')
 
-        const lookupItem = column.lookup.dataSource.find((item) => item[column.lookup?.valueExpr as string] === value)
+        const lookupItem = dataSource.find((item) => item[column.lookup?.valueExpr as string] === value)
         if (!lookupItem) return String(value ?? '')
 
         return String(lookupItem[column.lookup.displayExpr] ?? '')
     }
 
     const isLookupNumeric = (column: ScpGridColumn): boolean => {
-        if (!column.lookup?.dataSource?.length || !column.lookup.valueExpr) return false
+        const dataSource = lookupData[column.dataField] || (Array.isArray(column.lookup?.dataSource) ? column.lookup?.dataSource : [])
+        if (!dataSource.length || !column.lookup?.valueExpr) return false
 
-        const sampleValue = column.lookup.dataSource[0][column.lookup.valueExpr]
+        const sampleValue = dataSource[0][column.lookup.valueExpr]
         return typeof sampleValue === 'number'
     }
 
     const onDelete = async (row: Record<string, any>) => {
-        if (!configuration.allowDelete || !isStoreLike) return
+        if (!configuration.allowDelete) return
+
+        if (configuration.onDeleteClick) {
+            configuration.onDeleteClick(row)
+            return
+        }
+
+        if (!isStoreLike) return
         const key = row[configuration.dataId]
         if (key === undefined) return
 
@@ -380,15 +423,20 @@ export const ScpGrid = forwardRef(({ configuration }: ScpGridProps, ref: any) =>
                                                 }
                                             />
                                         </div>
-                                    ) : column.lookup?.dataSource?.length ? (
+                                    ) : column.lookup ? (
                                         <Select
-                                            value={String(editingRow[column.dataField] ?? '')}
+                                            value={editingRow[column.dataField] === null ? 'null' : String(editingRow[column.dataField] ?? '')}
                                             onValueChange={(value) =>
                                                 setEditingRow((prev) =>
                                                     prev
                                                         ? {
                                                               ...prev,
-                                                              [column.dataField]: value === '' ? '' : isLookupNumeric(column) ? Number(value) : value,
+                                                              [column.dataField]:
+                                                                  value === '' || value === 'null'
+                                                                      ? null
+                                                                      : isLookupNumeric(column)
+                                                                        ? Number(value)
+                                                                        : value,
                                                           }
                                                         : prev,
                                                 )
@@ -398,7 +446,11 @@ export const ScpGrid = forwardRef(({ configuration }: ScpGridProps, ref: any) =>
                                                 <SelectValue placeholder={`Seleccionar ${column.caption || column.dataField}`} />
                                             </SelectTrigger>
                                             <SelectContent>
-                                                {column.lookup.dataSource.map((item, index) => {
+                                                <SelectItem value="null">Ninguno</SelectItem>
+                                                {(
+                                                    lookupData[column.dataField] ||
+                                                    (Array.isArray(column.lookup?.dataSource) ? column.lookup?.dataSource : [])
+                                                ).map((item, index) => {
                                                     const itemValue = item[column.lookup?.valueExpr as string]
                                                     const itemLabel = getLookupValue(column, itemValue) || String(itemValue ?? index)
 
@@ -422,7 +474,7 @@ export const ScpGrid = forwardRef(({ configuration }: ScpGridProps, ref: any) =>
                                                     prev
                                                         ? {
                                                               ...prev,
-                                                              [column.dataField]: event.target.value,
+                                                              [column.dataField]: event.target.value === '' ? null : event.target.value,
                                                           }
                                                         : prev,
                                                 )
@@ -546,7 +598,9 @@ export const ScpGrid = forwardRef(({ configuration }: ScpGridProps, ref: any) =>
                                                 key={`${rowKey}-${column.dataField}`}
                                                 className="text-muted-foreground group-hover:text-foreground transition-colors"
                                             >
-                                                {column.dataType === 'boolean' && column.allowEditing !== false ? (
+                                                {column.cellTemplate ? (
+                                                    column.cellTemplate(row)
+                                                ) : column.dataType === 'boolean' && column.allowEditing !== false ? (
                                                     <Checkbox
                                                         checked={changes[rowKey]?.assigned ?? row[column.dataField]}
                                                         onCheckedChange={(checked) => {

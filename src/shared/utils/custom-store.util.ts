@@ -47,3 +47,12 @@ export const buildCustomStore = <T>(service: DataService<T>, keyField: string): 
         remove: (key) => service.deleteRecord(key),
     }
 }
+
+export const buildLookupDataSource = <T>(service: DataService<T>) => {
+    return () => service.getRecords(0, 1000)
+}
+
+
+export const buildLookpDataSource = buildLookupDataSource
+
+
