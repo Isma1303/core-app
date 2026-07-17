@@ -1,18 +1,18 @@
 {
-  "name": "DDG App",
-  "short_name": "DDG",
+  "name": "Core App",
+  "short_name": "Core",
   "lang": "es",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#0ab0d1",
-  "description": "Aplicacion corporativa DDG para gestion de eventos, usuarios y asignaciones.",
+  "description": "Aplicacion corporativa Core para gestion de eventos, usuarios y asignaciones.",
   "icons": [
     {
-      "src": "/ddg_logo.jpg",
+      "src": "/logo.png",
       "sizes": "1765x1765",
-      "type": "image/jpeg",
+      "type": "image/png",
       "purpose": "any maskable"
     }
   ]
