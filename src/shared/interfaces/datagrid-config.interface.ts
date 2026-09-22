@@ -1,10 +1,10 @@
-import { ScpGridColumn } from './scp-grid-column.interface'
-import { ScpGridToolbarButton } from './scp-grid-toolbar-button.interface'
+import { DataGridColumn } from './datagrid-column.interface'
+import { DataGridToolbarButton } from './datagrid-toolbar-button.interface'
 
-export interface ScpGridConfig {
+export interface DataGridConfig {
     dataSource: any
     dataId: string
-    columns: ScpGridColumn[]
+    columns: DataGridColumn[]
     pageRecords?: number[]
     showSearch?: boolean
     showFilters?: boolean
@@ -12,7 +12,7 @@ export interface ScpGridConfig {
     allowDelete?: boolean
     allowCreate?: boolean
     customAdd?: boolean
-    customButtons?: ScpGridToolbarButton[]
+    customButtons?: DataGridToolbarButton[]
     customButtonClicked?: (buttonName: string) => Promise<void> | void
     onEditClick?: (record: Record<string, any>) => void
     onDeleteClick?: (record: Record<string, any>) => void

@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react'
 import { useRolesDataGridConfig } from '../hooks'
 import { Role } from '../interfaces'
 import { RoleService } from '../services'
-import { ScpGrid } from '../../shared/components'
-import { ScpGridConfig } from '@/shared/interfaces/scp-grid-config.interface'
+import { DataGrid } from '../../shared/components'
+import { DataGridConfig } from '@/shared/interfaces'
 import { customStoreBuilder } from '@/shared/builders/custom-store-builder.builder'
 
 export const Roles = (): JSX.Element => {
@@ -12,7 +12,7 @@ export const Roles = (): JSX.Element => {
     const { obtenerConfig } = useRolesDataGridConfig(rolesService)
 
     const rolesCustomStore = customStoreBuilder<Role>(rolesService, 'role_id')
-    const [rolesConfiguration, setRolesConfiguration] = useState<ScpGridConfig | null>(null)
+    const [rolesConfiguration, setRolesConfiguration] = useState<DataGridConfig | null>(null)
 
     useEffect(() => {
         obtenerConfig(rolesCustomStore).then((config) => {
@@ -30,7 +30,7 @@ export const Roles = (): JSX.Element => {
                 </div>
             </div>
 
-            <div className="px-4 pb-8">{rolesConfiguration && <ScpGrid configuration={rolesConfiguration!} />}</div>
+            <div className="px-4 pb-8">{rolesConfiguration && <DataGrid configuration={rolesConfiguration!} />}</div>
         </div>
     )
 }

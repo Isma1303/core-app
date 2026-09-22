@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from 'react'
 import { User } from '../../interfaces'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { ScpGrid } from '@/shared/components'
+import { DataGrid } from '@/shared/components'
 import { useUsersToRoles } from '../../hooks/useUsersToRoles'
 
 const usersService = new UsersService()
@@ -61,7 +61,7 @@ export const UsersToRoles = () => {
                 </CardHeader>
                 <CardContent>
                     <div className="rounded-xl border border-border/40 overflow-hidden bg-background/40">
-                        <ScpGrid
+                        <DataGrid
                             key={`user-roles-${userId}`}
                             configuration={{
                                 ...userRolesConfig,

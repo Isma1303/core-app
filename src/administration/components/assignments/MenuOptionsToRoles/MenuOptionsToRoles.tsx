@@ -5,7 +5,7 @@ import './MenuOptionsToRoles.scss'
 import { Button } from '@/components/ui/button'
 import { Save, ChevronRight, ChevronDown } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { ScpGrid } from '@/shared/components'
+import { DataGrid } from '@/shared/components'
 import { useMenuOptionsToRoles } from '../../../hooks/useMenuOptionsToRoles'
 import { cn } from '@/lib/utils'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -154,7 +154,7 @@ export const MenuOptionsToRoles = (): JSX.Element => {
                 </CardHeader>
                 <CardContent>
                     <div className="rounded-xl border border-border/40 overflow-hidden bg-background/40">
-                        <ScpGrid
+                        <DataGrid
                             configuration={{
                                 ...rolesConfig,
                                 onSelectionChanged: (e: any) => {

@@ -3,7 +3,7 @@ import { ActionsService, ActionsToRolesService, RoleService } from '../../servic
 import { useEffect, useRef, useState } from 'react'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { ScpGrid } from '@/shared/components'
+import { DataGrid } from '@/shared/components'
 import { useActionsToRoles } from '../../hooks/useActionsToRoles'
 
 const actionsService = new ActionsService()
@@ -56,7 +56,7 @@ export const ActionsToRoles = (): JSX.Element => {
                     </Select>
 
                     <div className="rounded-xl border border-border/40 overflow-hidden bg-background/40">
-                        <ScpGrid
+                        <DataGrid
                             configuration={{
                                 ...rolesConfig,
                                 onSelectionChanged: (e: any) => {
@@ -75,7 +75,7 @@ export const ActionsToRoles = (): JSX.Element => {
                 </CardHeader>
                 <CardContent>
                     <div className="rounded-xl border border-border/40 overflow-hidden bg-background/40">
-                        <ScpGrid
+                        <DataGrid
                             key={`role-actions-${roleId}`}
                             configuration={{
                                 ...actionsConfig,

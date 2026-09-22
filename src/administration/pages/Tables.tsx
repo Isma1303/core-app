@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { TablesService } from '../services'
-import { ScpGridConfig } from '../../shared/interfaces'
-import { ScpGrid } from '../../shared/components'
+import { DataGridConfig } from '../../shared/interfaces'
+import { DataGrid } from '../../shared/components'
 import { Table } from '../interfaces'
 import { customStoreBuilder } from '../../shared/builders/custom-store-builder.builder'
 import { useTablesDataGridConfig } from '../hooks'
@@ -12,7 +12,7 @@ export const Tables = (): JSX.Element => {
     const { obtenerConfig } = useTablesDataGridConfig(tablesService)
 
     const tablesCustomStore = customStoreBuilder<Table>(tablesService, 'table_id')
-    const [tablesConfiguration, setTablesConfiguration] = useState<ScpGridConfig | null>(null)
+    const [tablesConfiguration, setTablesConfiguration] = useState<DataGridConfig | null>(null)
 
     useEffect(() => {
         obtenerConfig(tablesCustomStore).then((config) => {
@@ -30,7 +30,7 @@ export const Tables = (): JSX.Element => {
             </div>
 
             <div className="px-4 pb-8">
-                {tablesConfiguration && <ScpGrid configuration={tablesConfiguration!} />}
+                {tablesConfiguration && <DataGrid configuration={tablesConfiguration!} />}
             </div>
         </div>
     )

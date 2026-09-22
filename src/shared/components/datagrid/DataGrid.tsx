@@ -2,17 +2,23 @@ import { useEffect, useMemo, useState, forwardRef, useImperativeHandle } from 'r
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { Card, CardContent, CardHeader } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { ScpGridProps, ScpGridColumn } from '../../interfaces'
-import { ArrowDownUp, Download, FileSpreadsheet, KeyRound, ListChecks, Pencil, Plus, Search, Trash2 } from 'lucide-react'
+import { Separator } from '@/components/ui/separator'
+import { Badge } from '@/components/ui/badge'
+import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
+import { Empty } from '@/components/ui/empty'
+import { Skeleton } from '@/components/ui/skeleton'
+import { Pagination } from '@/components/ui/pagination'
+import { DataGridProps, DataGridColumn } from '../../interfaces'
+import { ArrowDownUp, Download, FileSpreadsheet, KeyRound, ListChecks, Pencil, Plus, Search, Trash2, ChevronLeft, ChevronRight, ChevronFirst, ChevronLast } from 'lucide-react'
 import { saveAs } from 'file-saver'
 import { cn } from '@/lib/utils'
 
 const DEFAULT_PAGE_SIZES = [5, 10, 20]
 
-export const ScpGrid = forwardRef(({ configuration }: ScpGridProps, ref: any) => {
+export const DataGrid = forwardRef(({ configuration }: DataGridProps, ref: any) => {
     const columns = configuration.columns ?? []
     const pageRecords = configuration.pageRecords?.length ? configuration.pageRecords : DEFAULT_PAGE_SIZES
 
@@ -73,7 +79,7 @@ export const ScpGrid = forwardRef(({ configuration }: ScpGridProps, ref: any) =>
             .toLowerCase()
             .trim()
 
-    const formatValue = (row: Record<string, any>, column: ScpGridColumn): string => {
+    const formatValue = (row: Record<string, any>, column: DataGridColumn): string => {
         const value = row[column.dataField]
         const dataSource = lookupData[column.dataField] || (Array.isArray(column.lookup?.dataSource) ? column.lookup?.dataSource : [])
 
@@ -97,7 +103,7 @@ export const ScpGrid = forwardRef(({ configuration }: ScpGridProps, ref: any) =>
     }))
 
     const matchesColumnFilters = (row: Record<string, any>): boolean => {
-        return columns.every((column: ScpGridColumn) => {
+        return columns.every((column: DataGridColumn) => {
             const filterValue = normalizeText(columnFilters[column.dataField])
             if (!filterValue) return true
 
@@ -138,7 +144,7 @@ export const ScpGrid = forwardRef(({ configuration }: ScpGridProps, ref: any) =>
 
                 const filteredBySearch = searchText
                     ? source.filter((row: Record<string, any>) =>
-                          columns.some((column: ScpGridColumn) => normalizeText(row[column.dataField]).includes(normalizeText(searchText))),
+                          columns.some((column: DataGridColumn) => normalizeText(row[column.dataField]).includes(normalizeText(searchText))),
                       )
                     : source
 
@@ -172,11 +178,11 @@ export const ScpGrid = forwardRef(({ configuration }: ScpGridProps, ref: any) =>
     const totalPages = useMemo(() => Math.max(1, Math.ceil(totalCount / pageSize)), [totalCount, pageSize])
 
     const editableColumns = useMemo(
-        () => columns.filter((column: ScpGridColumn) => column.dataField !== configuration.dataId),
+        () => columns.filter((column: DataGridColumn) => column.dataField !== configuration.dataId),
         [columns, configuration.dataId],
     )
 
-    const getLookupValue = (column: ScpGridColumn, value: any): string => {
+    const getLookupValue = (column: DataGridColumn, value: any): string => {
         const dataSource = lookupData[column.dataField] || (Array.isArray(column.lookup?.dataSource) ? column.lookup?.dataSource : [])
         if (!dataSource.length || !column.lookup?.valueExpr || !column.lookup.displayExpr) return String(value ?? '')
 
@@ -186,7 +192,7 @@ export const ScpGrid = forwardRef(({ configuration }: ScpGridProps, ref: any) =>
         return String(lookupItem[column.lookup.displayExpr] ?? '')
     }
 
-    const isLookupNumeric = (column: ScpGridColumn): boolean => {
+    const isLookupNumeric = (column: DataGridColumn): boolean => {
         const dataSource = lookupData[column.dataField] || (Array.isArray(column.lookup?.dataSource) ? column.lookup?.dataSource : [])
         if (!dataSource.length || !column.lookup?.valueExpr) return false
 
@@ -247,7 +253,7 @@ export const ScpGrid = forwardRef(({ configuration }: ScpGridProps, ref: any) =>
 
     const onCreate = () => {
         const base: Record<string, any> = {}
-        editableColumns.forEach((column: ScpGridColumn) => {
+        editableColumns.forEach((column: DataGridColumn) => {
             base[column.dataField] = column.dataType === 'boolean' ? false : ''
         })
         setEditingRow(base)
@@ -271,7 +277,7 @@ export const ScpGrid = forwardRef(({ configuration }: ScpGridProps, ref: any) =>
     const getCurrentRowsAsObjects = (): Record<string, any>[] => {
         return rows.map((row) => {
             const result: Record<string, any> = {}
-            columns.forEach((column: ScpGridColumn) => {
+            columns.forEach((column: DataGridColumn) => {
                 result[column.caption || column.dataField] = formatValue(row, column)
             })
             return result
@@ -314,11 +320,20 @@ export const ScpGrid = forwardRef(({ configuration }: ScpGridProps, ref: any) =>
     }
 
     const getButtonIcon = (iconName?: string) => {
-        if (iconName === 'key') return <KeyRound className="h-4 w-4" />
-        return <Plus className="h-4 w-4" />
+        if (iconName === 'key') return <KeyRound />
+        return <Plus />
     }
 
     const colSpanValue = columns.length + (hasActions ? 1 : 0) + (showSelectionColumn ? 1 : 0)
+
+    const handlePageChange = (newPage: number) => {
+        setPage(newPage)
+    }
+
+    const handlePageSizeChange = (newSize: number) => {
+        setPageSize(newSize)
+        setPage(1)
+    }
 
     return (
         <Card className="mt-3 overflow-hidden border-border/50 shadow-sm transition-all hover:shadow-md animate-in fade-in duration-500">
@@ -345,7 +360,6 @@ export const ScpGrid = forwardRef(({ configuration }: ScpGridProps, ref: any) =>
                                 key={button.name}
                                 variant="outline"
                                 size="sm"
-                                className="h-10 border-border/50 transition-all hover:bg-foreground/5"
                                 title={button.hint || button.name}
                                 onClick={() => configuration.customButtonClicked?.(button.name)}
                             >
@@ -359,19 +373,17 @@ export const ScpGrid = forwardRef(({ configuration }: ScpGridProps, ref: any) =>
                                 <Button
                                     variant="outline"
                                     size="sm"
-                                    className="h-10 border-border/50 transition-all hover:bg-foreground/5"
                                     onClick={exportToCsv}
                                 >
-                                    <Download className="h-4 w-4 sm:mr-2" />
+                                    <Download data-icon="inline-start" />
                                     <span className="hidden sm:inline">CSV</span>
                                 </Button>
                                 <Button
                                     variant="outline"
                                     size="sm"
-                                    className="h-10 border-border/50 transition-all hover:bg-foreground/5"
                                     onClick={exportToXlsx}
                                 >
-                                    <FileSpreadsheet className="h-4 w-4 sm:mr-2" />
+                                    <FileSpreadsheet data-icon="inline-start" />
                                     <span className="hidden sm:inline">XLSX</span>
                                 </Button>
                             </>
@@ -380,10 +392,10 @@ export const ScpGrid = forwardRef(({ configuration }: ScpGridProps, ref: any) =>
                         {Object.keys(changes).length > 0 && (
                             <Button
                                 size="sm"
+                                variant="default"
                                 onClick={onBatchSave}
-                                className="h-10 bg-green-600 text-white hover:bg-green-700 transition-all active:scale-[0.98]"
                             >
-                                <ListChecks className="h-4 w-4 sm:mr-2" />
+                                <ListChecks data-icon="inline-start" />
                                 <span className="hidden sm:inline">Guardar Cambios</span>
                             </Button>
                         )}
@@ -391,38 +403,35 @@ export const ScpGrid = forwardRef(({ configuration }: ScpGridProps, ref: any) =>
                             <Button
                                 size="sm"
                                 onClick={onCreate}
-                                className="h-10 bg-foreground text-background hover:bg-foreground/90 transition-all active:scale-[0.98]"
                             >
-                                <Plus className="h-4 w-4 sm:mr-2" />
+                                <Plus data-icon="inline-start" />
                                 <span className="hidden sm:inline">Nuevo</span>
                             </Button>
                         )}
                     </div>
                 </div>
             </CardHeader>
-            <CardContent className="p-4 space-y-4">
+            <CardContent className="p-4">
                 {editingRow && (
                     <div className="rounded-lg border border-border/50 bg-muted/20 p-4 shadow-sm animate-in fade-in slide-in-from-top-2 duration-300">
                         <div className="grid gap-4 md:grid-cols-2">
-                            {editableColumns.map((column: ScpGridColumn) => (
-                                <div key={column.dataField} className="space-y-1.5 text-sm">
+                            {editableColumns.map((column: DataGridColumn) => (
+                                <div key={column.dataField} className="flex flex-col gap-1.5 text-sm">
                                     <label className="font-medium text-foreground/90">{column.caption || column.dataField}</label>
                                     {column.dataType === 'boolean' ? (
-                                        <div className="h-9 flex items-center">
-                                            <Checkbox
-                                                checked={Boolean(editingRow[column.dataField])}
-                                                onCheckedChange={(checked) =>
-                                                    setEditingRow((prev) =>
-                                                        prev
-                                                            ? {
-                                                                  ...prev,
-                                                                  [column.dataField]: checked === true,
-                                                              }
-                                                            : prev,
-                                                    )
-                                                }
-                                            />
-                                        </div>
+                                        <Checkbox
+                                            checked={Boolean(editingRow[column.dataField])}
+                                            onCheckedChange={(checked) =>
+                                                setEditingRow((prev) =>
+                                                    prev
+                                                        ? {
+                                                              ...prev,
+                                                              [column.dataField]: checked === true,
+                                                          }
+                                                        : prev,
+                                                )
+                                            }
+                                        />
                                     ) : column.lookup ? (
                                         <Select
                                             value={editingRow[column.dataField] === null ? 'null' : String(editingRow[column.dataField] ?? '')}
@@ -489,7 +498,6 @@ export const ScpGrid = forwardRef(({ configuration }: ScpGridProps, ref: any) =>
                             <Button
                                 variant="outline"
                                 size="sm"
-                                className="border-border/50 hover:bg-foreground/5 transition-all"
                                 onClick={() => {
                                     setEditingRow(null)
                                     setIsCreating(false)
@@ -497,201 +505,192 @@ export const ScpGrid = forwardRef(({ configuration }: ScpGridProps, ref: any) =>
                             >
                                 Cancelar
                             </Button>
-                            <Button
-                                size="sm"
-                                className="bg-foreground text-background hover:bg-foreground/90 active:scale-[0.98] transition-all"
-                                onClick={onSave}
-                            >
+                            <Button size="sm" onClick={onSave}>
                                 Guardar
                             </Button>
                         </div>
                     </div>
                 )}
 
-                <Table>
-                    <TableHeader className="bg-muted/30">
-                        <TableRow>
-                            {showSelectionColumn && <TableHead className="w-[52px]" />}
-                            {columns.map((column: ScpGridColumn) => (
-                                <TableHead key={column.dataField} className="font-semibold text-foreground">
-                                    <button
-                                        className="inline-flex items-center gap-1 text-left"
-                                        onClick={() => toggleSort(column.dataField)}
-                                        title={`Ordenar por ${column.caption || column.dataField}`}
-                                    >
-                                        {column.caption || column.dataField}
-                                        <ArrowDownUp className="h-3.5 w-3.5 text-muted-foreground" />
-                                    </button>
-                                </TableHead>
-                            ))}
-                            {hasActions && <TableHead className="text-right font-semibold text-foreground">Acciones</TableHead>}
-                        </TableRow>
-                        <TableRow>
-                            {showSelectionColumn && <TableHead />}
-                            {columns.map((column: ScpGridColumn) => (
-                                <TableHead key={`${column.dataField}-filter`}>
-                                    {column.allowFiltering !== false && (
-                                        <Input
-                                            value={columnFilters[column.dataField] || ''}
-                                            onChange={(event) => {
-                                                setColumnFilters((previous) => ({
-                                                    ...previous,
-                                                    [column.dataField]: event.target.value,
-                                                }))
-                                                setPage(1)
-                                            }}
-                                            placeholder="Filtrar"
-                                            className="h-8 bg-background border-border/50 focus-visible:ring-1 focus-visible:ring-foreground/20"
+                <div className="overflow-auto">
+                    <Table>
+                        <TableHeader className="bg-muted/30">
+                            <TableRow>
+                                {showSelectionColumn && <TableHead className="w-[52px]" />}
+                                {columns.map((column: DataGridColumn) => (
+                                    <TableHead key={column.dataField} className="font-semibold text-foreground">
+                                        <button
+                                            className="inline-flex items-center gap-1 text-left"
+                                            onClick={() => toggleSort(column.dataField)}
+                                            title={`Ordenar por ${column.caption || column.dataField}`}
+                                        >
+                                            {column.caption || column.dataField}
+                                            <ArrowDownUp className="h-3.5 w-3.5 text-muted-foreground" />
+                                        </button>
+                                    </TableHead>
+                                ))}
+                                {hasActions && <TableHead className="text-right font-semibold text-foreground">Acciones</TableHead>}
+                            </TableRow>
+                            <TableRow>
+                                {showSelectionColumn && <TableHead />}
+                                {columns.map((column: DataGridColumn) => (
+                                    <TableHead key={`${column.dataField}-filter`}>
+                                        {column.allowFiltering !== false && (
+                                            <Input
+                                                value={columnFilters[column.dataField] || ''}
+                                                onChange={(event) => {
+                                                    setColumnFilters((previous) => ({
+                                                        ...previous,
+                                                        [column.dataField]: event.target.value,
+                                                    }))
+                                                    setPage(1)
+                                                }}
+                                                placeholder="Filtrar"
+                                                className="h-8 bg-background border-border/50 focus-visible:ring-1 focus-visible:ring-foreground/20"
+                                            />
+                                        )}
+                                    </TableHead>
+                                ))}
+                                {hasActions && <TableHead />}
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {isLoading && (
+                                <TableRow>
+                                    <TableCell colSpan={colSpanValue} className="py-8 text-center">
+                                        <div className="flex items-center justify-center gap-2">
+                                            <Skeleton className="h-4 w-24" />
+                                            <span className="text-muted-foreground">Cargando...</span>
+                                        </div>
+                                    </TableCell>
+                                </TableRow>
+                            )}
+
+                            {!isLoading && rows.length === 0 && (
+                                <TableRow>
+                                    <TableCell colSpan={colSpanValue} className="py-12">
+                                        <Empty
+                                            title="Sin registros"
+                                            description="No se encontraron datos que coincidan con los filtros aplicados."
                                         />
-                                    )}
-                                </TableHead>
-                            ))}
-                            {hasActions && <TableHead />}
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {isLoading && (
-                            <TableRow>
-                                <TableCell colSpan={colSpanValue} className="py-8 text-center text-muted-foreground">
-                                    Cargando...
-                                </TableCell>
-                            </TableRow>
-                        )}
+                                    </TableCell>
+                                </TableRow>
+                            )}
 
-                        {!isLoading && rows.length === 0 && (
-                            <TableRow>
-                                <TableCell colSpan={colSpanValue} className="py-8 text-center text-muted-foreground">
-                                    Sin registros
-                                </TableCell>
-                            </TableRow>
-                        )}
-
-                        {!isLoading &&
-                            rows.map((row, index) => {
-                                const rowKey = row[configuration.dataId] ?? `${configuration.dataId}-${index}`
-                                return (
-                                    <TableRow
-                                        key={rowKey}
-                                        className={cn(
-                                            'group cursor-pointer transition-colors hover:bg-muted/50',
-                                            selectedId === row[configuration.dataId] && 'bg-muted font-medium',
-                                        )}
-                                        onClick={() => handleRowClick(row)}
-                                    >
-                                        {showSelectionColumn && (
-                                            <TableCell className="w-[52px]" onClick={(event) => event.stopPropagation()}>
-                                                <Checkbox
-                                                    checked={selectedId === row[configuration.dataId]}
-                                                    onCheckedChange={(checked) => {
-                                                        if (checked === true) {
-                                                            selectRow(row)
-                                                            return
-                                                        }
-                                                        setSelectedRows([])
-                                                        setSelectedId(null)
-                                                    }}
-                                                />
-                                            </TableCell>
-                                        )}
-                                        {columns.map((column: ScpGridColumn) => (
-                                            <TableCell
-                                                key={`${rowKey}-${column.dataField}`}
-                                                className="text-muted-foreground group-hover:text-foreground transition-colors"
-                                            >
-                                                {column.cellTemplate ? (
-                                                    column.cellTemplate(row)
-                                                ) : column.dataType === 'boolean' && column.allowEditing !== false ? (
+                            {!isLoading &&
+                                rows.map((row, index) => {
+                                    const rowKey = row[configuration.dataId] ?? `${configuration.dataId}-${index}`
+                                    return (
+                                        <TableRow
+                                            key={rowKey}
+                                            className={cn(
+                                                'group cursor-pointer transition-colors hover:bg-muted/50',
+                                                selectedId === row[configuration.dataId] && 'bg-muted font-medium',
+                                            )}
+                                            onClick={() => handleRowClick(row)}
+                                        >
+                                            {showSelectionColumn && (
+                                                <TableCell className="w-[52px]" onClick={(event) => event.stopPropagation()}>
                                                     <Checkbox
-                                                        checked={changes[rowKey]?.assigned ?? row[column.dataField]}
+                                                        checked={selectedId === row[configuration.dataId]}
                                                         onCheckedChange={(checked) => {
-                                                            setChanges((prev) => ({
-                                                                ...prev,
-                                                                [rowKey]: { ...prev[rowKey], assigned: checked === true },
-                                                            }))
+                                                            if (checked === true) {
+                                                                selectRow(row)
+                                                                return
+                                                            }
+                                                            setSelectedRows([])
+                                                            setSelectedId(null)
                                                         }}
                                                     />
-                                                ) : (
-                                                    formatValue(row, column)
-                                                )}
-                                            </TableCell>
-                                        ))}
-                                        {hasActions && (
-                                            <TableCell className="text-right">
-                                                <div className="flex justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                    {configuration.allowUpdate && (
-                                                        <Button
-                                                            variant="ghost"
-                                                            size="icon"
-                                                            className="h-8 w-8 text-muted-foreground hover:text-blue-600 hover:bg-blue-50 transition-all"
-                                                            onClick={(event) => {
-                                                                event.stopPropagation()
-                                                                if (configuration.onEditClick) {
-                                                                    configuration.onEditClick(row)
-                                                                } else {
-                                                                    setEditingRow(row)
-                                                                    setIsCreating(false)
-                                                                }
+                                                </TableCell>
+                                            )}
+                                            {columns.map((column: DataGridColumn) => (
+                                                <TableCell
+                                                    key={`${rowKey}-${column.dataField}`}
+                                                    className="text-muted-foreground group-hover:text-foreground transition-colors"
+                                                >
+                                                    {column.cellTemplate ? (
+                                                        column.cellTemplate(row)
+                                                    ) : column.dataType === 'boolean' && column.allowEditing !== false ? (
+                                                        <Checkbox
+                                                            checked={changes[rowKey]?.assigned ?? row[column.dataField]}
+                                                            onCheckedChange={(checked) => {
+                                                                setChanges((prev) => ({
+                                                                    ...prev,
+                                                                    [rowKey]: { ...prev[rowKey], assigned: checked === true },
+                                                                }))
                                                             }}
-                                                        >
-                                                            <Pencil className="h-4 w-4" />
-                                                        </Button>
+                                                        />
+                                                    ) : (
+                                                        formatValue(row, column)
                                                     )}
-                                                    {configuration.allowDelete && (
-                                                        <Button
-                                                            variant="ghost"
-                                                            size="icon"
-                                                            className="h-8 w-8 text-muted-foreground hover:text-red-600 hover:bg-red-50 transition-all"
-                                                            onClick={(event) => {
-                                                                event.stopPropagation()
-                                                                onDelete(row)
-                                                            }}
-                                                        >
-                                                            <Trash2 className="h-4 w-4" />
-                                                        </Button>
-                                                    )}
-                                                </div>
-                                            </TableCell>
-                                        )}
-                                    </TableRow>
-                                )
-                            })}
-                    </TableBody>
-                </Table>
+                                                </TableCell>
+                                            ))}
+                                            {hasActions && (
+                                                <TableCell className="text-right">
+                                                    <div className="flex justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                        {configuration.allowUpdate && (
+                                                            <Tooltip>
+                                                                <TooltipTrigger asChild>
+                                                                    <Button
+                                                                        variant="ghost"
+                                                                        size="icon"
+                                                                        onClick={(event) => {
+                                                                            event.stopPropagation()
+                                                                            if (configuration.onEditClick) {
+                                                                                configuration.onEditClick(row)
+                                                                            } else {
+                                                                                setEditingRow(row)
+                                                                                setIsCreating(false)
+                                                                            }
+                                                                        }}
+                                                                    >
+                                                                        <Pencil />
+                                                                    </Button>
+                                                                </TooltipTrigger>
+                                                                <TooltipContent>Editar</TooltipContent>
+                                                            </Tooltip>
+                                                        )}
+                                                        {configuration.allowDelete && (
+                                                            <Tooltip>
+                                                                <TooltipTrigger asChild>
+                                                                    <Button
+                                                                        variant="ghost"
+                                                                        size="icon"
+                                                                        onClick={(event) => {
+                                                                            event.stopPropagation()
+                                                                            onDelete(row)
+                                                                        }}
+                                                                    >
+                                                                        <Trash2 />
+                                                                    </Button>
+                                                                </TooltipTrigger>
+                                                                <TooltipContent>Eliminar</TooltipContent>
+                                                            </Tooltip>
+                                                        )}
+                                                    </div>
+                                                </TableCell>
+                                            )}
+                                        </TableRow>
+                                    )
+                                })}
+                        </TableBody>
+                    </Table>
+                </div>
 
-                <div className="flex flex-wrap items-center justify-between gap-3 text-sm text-muted-foreground">
-                    <div>
-                        Página {page} de {totalPages}
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-3 mt-4 pt-4 border-t border-border/50">
+                    <div className="text-sm text-muted-foreground">
+                        Página {page} de {totalPages} · {totalCount} registros
                     </div>
-                    <div className="flex items-center gap-2">
-                        <Select
-                            value={String(pageSize)}
-                            onValueChange={(value) => {
-                                setPageSize(Number(value))
-                                setPage(1)
-                            }}
-                        >
-                            <SelectTrigger className="h-8 w-[130px] border-border/50 focus:ring-1 focus:ring-foreground/20">
-                                <SelectValue placeholder="Tamaño" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {pageRecords.map((size: number) => (
-                                    <SelectItem key={size} value={String(size)}>
-                                        {size} / página
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                        <Button variant="outline" onClick={() => setPage((current) => Math.max(1, current - 1))} disabled={page === 1}>
-                            Anterior
-                        </Button>
-                        <Button
-                            variant="outline"
-                            onClick={() => setPage((current) => Math.min(totalPages, current + 1))}
-                            disabled={page >= totalPages}
-                        >
-                            Siguiente
-                        </Button>
-                    </div>
+                    <Pagination
+                        page={page}
+                        totalPages={totalPages}
+                        onPageChange={handlePageChange}
+                        showPageSize
+                        pageSize={pageSize}
+                        onPageSizeChange={handlePageSizeChange}
+                        pageSizeOptions={pageRecords}
+                    />
                 </div>
             </CardContent>
         </Card>

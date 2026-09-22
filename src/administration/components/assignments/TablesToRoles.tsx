@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { ScpGrid } from '@/shared/components'
+import { DataGrid } from '@/shared/components'
 import { customStoreBuilder } from '@/shared/builders/custom-store-builder.builder'
-import { ScpGridConfig } from '@/shared/interfaces/scp-grid-config.interface'
+import { DataGridConfig } from '@/shared/interfaces'
 import { Role, Table, TableToRole } from '../../interfaces'
 import { RoleService, TablesService, TablesToRolesService } from '../../services'
 
@@ -13,7 +13,7 @@ const tableToRolesService = new TablesToRolesService()
 export const TablesToRoles = (): JSX.Element => {
     const [tables, setTables] = useState<Table[]>([])
     const [roles, setRoles] = useState<Role[]>([])
-    const [configuration, setConfiguration] = useState<ScpGridConfig | null>(null)
+    const [configuration, setConfiguration] = useState<DataGridConfig | null>(null)
 
     useEffect(() => {
         const loadLookupData = async () => {
@@ -35,7 +35,7 @@ export const TablesToRoles = (): JSX.Element => {
     }, [])
 
     useEffect(() => {
-        const config: ScpGridConfig = {
+        const config: DataGridConfig = {
             dataSource: customStoreBuilder<TableToRole>(tableToRolesService, 'record_id'),
             dataId: 'record_id',
             columns: [
@@ -116,7 +116,7 @@ export const TablesToRoles = (): JSX.Element => {
                 </CardContent>
             </Card>
 
-            {configuration && <ScpGrid configuration={configuration} />}
+            {configuration && <DataGrid configuration={configuration} />}
         </div>
     )
 }

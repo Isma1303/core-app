@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react'
 import { useMenuOptionsDataGridConfig } from '../hooks'
 import { MenuOption } from '../interfaces'
 import { MenuOptionsService } from '../services'
-import { ScpGrid } from '../../shared/components'
-import { ScpGridConfig } from '@/shared/interfaces/scp-grid-config.interface'
+import { DataGrid } from '../../shared/components'
+import { DataGridConfig } from '@/shared/interfaces'
 import { customStoreBuilder } from '@/shared/builders/custom-store-builder.builder'
 
 export const MenuOptions = (): JSX.Element => {
@@ -12,7 +12,7 @@ export const MenuOptions = (): JSX.Element => {
     const { obtenerConfig } = useMenuOptionsDataGridConfig(menuOptionsService)
 
     const menuOptionsCustomStore = customStoreBuilder<MenuOption>(menuOptionsService, 'menu_option_id')
-    const [menuOptionsConfiguration, setMenuOptionsConfiguration] = useState<ScpGridConfig | null>(null)
+    const [menuOptionsConfiguration, setMenuOptionsConfiguration] = useState<DataGridConfig | null>(null)
 
     useEffect(() => {
         obtenerConfig(menuOptionsCustomStore).then((config) => {
@@ -30,7 +30,7 @@ export const MenuOptions = (): JSX.Element => {
             </div>
 
             <div className="px-4 pb-8">
-                {menuOptionsConfiguration && <ScpGrid configuration={menuOptionsConfiguration!} />}
+                {menuOptionsConfiguration && <DataGrid configuration={menuOptionsConfiguration!} />}
             </div>
         </div>
     )

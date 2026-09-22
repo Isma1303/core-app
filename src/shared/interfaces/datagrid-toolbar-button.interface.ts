@@ -1,4 +1,4 @@
-export interface ScpGridToolbarButton {
+export interface DataGridToolbarButton {
     name: string
     hint?: string
     icon?: string

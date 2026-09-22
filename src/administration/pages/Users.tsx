@@ -5,10 +5,10 @@ import { UserChangePasswordForm, UserForm } from '../components'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Plus } from 'lucide-react'
-import { ScpGrid } from '../../shared/components'
+import { DataGrid } from '../../shared/components'
 import { useUsersDataGridConfig } from '../hooks'
 import { customStoreBuilder } from '@/shared/builders/custom-store-builder.builder'
-import { ScpGridConfig } from '@/shared/interfaces/scp-grid-config.interface'
+import { DataGridConfig } from '@/shared/interfaces'
 
 export const Users = () => {
     const usersService = new UsersService()
@@ -17,7 +17,7 @@ export const Users = () => {
         useUsersDataGridConfig(usersService, datagridRef)
 
     const usersCustomStore = customStoreBuilder<User>(usersService, 'user_id')
-    const [usersConfiguration, setUsersConfiguration] = useState<ScpGridConfig | null>(null)
+    const [usersConfiguration, setUsersConfiguration] = useState<DataGridConfig | null>(null)
 
     useEffect(() => {
         obtenerConfig(usersCustomStore).then((config) => {
@@ -44,7 +44,7 @@ export const Users = () => {
                 </Button>
             </div>
 
-            <div className="px-4 pb-8">{usersConfiguration && <ScpGrid ref={datagridRef} configuration={usersConfiguration!} />}</div>
+            <div className="px-4 pb-8">{usersConfiguration && <DataGrid ref={datagridRef} configuration={usersConfiguration!} />}</div>
 
             <Dialog open={showUserForm} onOpenChange={(open) => !open && unmountForm()}>
                 <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-3xl">

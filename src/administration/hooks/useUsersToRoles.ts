@@ -104,7 +104,7 @@ export const useUsersToRoles = (params: Params): UseUsersToRoles => {
                 toast.success('Permisos Aplicados con Éxito')
             }
         }
-        // ScpGrid will refresh after saving if configured correctly
+        // DataGrid will refresh after saving if configured correctly
     }
 
     return {

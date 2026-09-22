@@ -1,5 +1,5 @@
 /* eslint-disable no-prototype-builtins */
-import { DataService, ScpGridConfig } from '../../shared/interfaces'
+import { DataService, DataGridConfig } from '../../shared/interfaces'
 import { useAuthStore } from '../../auth'
 import { MenuOption } from '../interfaces'
 import { buildLookupDataSource } from '../../shared/utils/custom-store.util'
@@ -11,7 +11,7 @@ export const useMenuOptionsDataGridConfig = (menuOptionsService: DataService<Men
         const modelProperties = await menuOptionsService.getModelProperties()
         const table = modelProperties?.tableName.toUpperCase()
 
-        const config: ScpGridConfig = {
+        const config: DataGridConfig = {
             dataSource: dataSource,
             dataId: 'menu_option_id',
             columns: [

@@ -1,25 +1,25 @@
 import { ReactNode } from 'react'
 
-export interface ScpGridLookup {
+export interface DataGridLookup {
     dataSource?: Record<string, any>[] | (() => Promise<any[]>) | any
     valueExpr?: string
     displayExpr?: string
 }
 
-export interface ScpGridValidationRule {
+export interface DataGridValidationRule {
     type: string
     message?: string
     min?: number
     max?: number
 }
 
-export interface ScpGridColumn {
+export interface DataGridColumn {
     dataField: string
     caption?: string
     dataType?: 'string' | 'number' | 'boolean' | 'date'
     allowFiltering?: boolean
     allowEditing?: boolean
-    lookup?: ScpGridLookup
-    validationRules?: ScpGridValidationRule[]
+    lookup?: DataGridLookup
+    validationRules?: DataGridValidationRule[]
     cellTemplate?: (row: Record<string, any>) => ReactNode
 }

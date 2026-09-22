@@ -7,6 +7,7 @@ import { useAuthStore } from './auth'
 import { Suspense, useEffect } from 'react'
 import { useSystemActionPermissionsStore } from './administration/stores'
 import { SuspenseFallback } from './shared/components'
+import { TooltipProvider } from './components/ui/tooltip'
 
 const App = () => {
     const user = useAuthStore((state) => state.user)
@@ -31,15 +32,17 @@ export default function Root() {
     const screenSizeClass = useScreenSizeClass()
 
     return (
-        <Suspense fallback={<SuspenseFallback />}>
-            <Toaster position="top-right" richColors closeButton />
-            <BrowserRouter>
-                <div className={`app ${screenSizeClass}`}>
-                    <Routes>
-                        <Route path="/*" element={<App />} />
-                    </Routes>
-                </div>
-            </BrowserRouter>
-        </Suspense>
+        <TooltipProvider>
+            <Suspense fallback={<SuspenseFallback />}>
+                <Toaster position="top-right" richColors closeButton />
+                <BrowserRouter>
+                    <div className={`app ${screenSizeClass}`}>
+                        <Routes>
+                            <Route path="/*" element={<App />} />
+                        </Routes>
+                    </div>
+                </BrowserRouter>
+            </Suspense>
+        </TooltipProvider>
     )
 }

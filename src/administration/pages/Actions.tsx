@@ -3,8 +3,8 @@ import { customStoreBuilder } from '../../shared/builders/custom-store-builder.b
 import { useActionsDataGridConfig } from '../hooks'
 import { Action } from '../interfaces'
 import { ActionsService } from '../services/actions.service'
-import { ScpGridConfig } from '../../shared/interfaces'
-import { ScpGrid } from '../../shared/components'
+import { DataGridConfig } from '../../shared/interfaces'
+import { DataGrid } from '../../shared/components'
 
 export const Actions = (): JSX.Element => {
     const actionsService = new ActionsService()
@@ -12,7 +12,7 @@ export const Actions = (): JSX.Element => {
     const { obtenerConfig } = useActionsDataGridConfig(actionsService)
 
     const actionsCustomStore = customStoreBuilder<Action>(actionsService, 'action_id')
-    const [actionsConfiguration, setActionsConfiguration] = useState<ScpGridConfig | null>(null)
+    const [actionsConfiguration, setActionsConfiguration] = useState<DataGridConfig | null>(null)
 
     useEffect(() => {
         obtenerConfig(actionsCustomStore).then((config) => {
@@ -30,7 +30,7 @@ export const Actions = (): JSX.Element => {
             </div>
 
             <div className="px-4 pb-8">
-                {actionsConfiguration && <ScpGrid configuration={actionsConfiguration!} />}
+                {actionsConfiguration && <DataGrid configuration={actionsConfiguration!} />}
             </div>
         </div>
     )
