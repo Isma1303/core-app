@@ -77,7 +77,7 @@ export const UserPanel = ({ menuMode }: UserPanelProps): JSX.Element => {
                         }}
                     />
                 </div>
-                <div className="flex flex-col items-start hidden mr-2 text-left md:flex">
+                <div className="hidden flex-col items-start mr-1 text-left md:flex">
                     <span className="text-sm font-medium leading-none text-foreground">{user!.name}</span>
                     <span className="text-xs leading-none text-muted-foreground">Admin</span>
                 </div>

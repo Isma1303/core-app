@@ -27,7 +27,7 @@ const getIcon = (iconName?: string) => {
 }
 
 export const SideNavigationMenu = (props: React.PropsWithChildren<SideNavigationMenuProps>) => {
-    const { children, selectedItemChanged, openMenu, compactMode } = props
+    const { children, selectedItemChanged, compactMode } = props
     const navigation = useNavigationStore((state) => state.navigation)
     const loadNavigation = useNavigationStore((state) => state.loadNavigation)
     const isLoadingPaths = useNavigationStore((state) => state.isLoadingPaths)
@@ -102,8 +102,7 @@ export const SideNavigationMenu = (props: React.PropsWithChildren<SideNavigation
 
     return (
         <div
-            className={cn('flex h-full flex-col border-r border-border bg-background transition-all duration-200', compactMode ? 'w-16' : 'w-64')}
-            onMouseEnter={openMenu}
+            className={cn('flex h-full flex-col border-r border-border bg-background transition-all duration-200', compactMode ? 'w-16' : 'w-60')}
         >
             {children}
             <div className="flex-1 overflow-y-auto px-2 py-3">

@@ -16,22 +16,16 @@ export const SideNavOuterToolbar = ({ title, children }: { title: string; childr
         if (e.event) e.event.stopPropagation()
     }, [])
 
-    const temporaryOpenMenu = useCallback(() => {
-        if (menuStatus === MenuStatus.Closed) {
-            setMenuStatus(MenuStatus.TemporaryOpened)
-        }
-    }, [menuStatus])
-
     const onNavigationChanged = useCallback(
         ({ itemData, event }: any) => {
-            if (menuStatus === MenuStatus.Closed || !itemData.path) {
+            if (!itemData.path) {
                 if (event) event.preventDefault()
                 return
             }
 
             navigate(itemData.path)
 
-            if (!isLarge || menuStatus === MenuStatus.TemporaryOpened) {
+            if (!isLarge && menuStatus !== MenuStatus.Closed) {
                 setMenuStatus(MenuStatus.Closed)
                 if (event) event.stopPropagation()
             }
@@ -47,7 +41,7 @@ export const SideNavOuterToolbar = ({ title, children }: { title: string; childr
 
             <div className="flex flex-1 overflow-hidden">
                 <aside className={cn('z-30 transition-all duration-300 ease-in-out', isOpened ? 'w-60' : 'w-16')}>
-                    <SideNavigationMenu compactMode={!isOpened} selectedItemChanged={onNavigationChanged} openMenu={temporaryOpenMenu} />
+                    <SideNavigationMenu compactMode={!isOpened} selectedItemChanged={onNavigationChanged} />
                 </aside>
 
                 <main className="flex-1 overflow-y-auto" ref={scrollViewRef}>

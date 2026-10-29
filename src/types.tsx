@@ -10,7 +10,6 @@ export interface HeaderProps {
 
 export interface SideNavigationMenuProps {
     selectedItemChanged: (e: any) => void
-    openMenu: (e: React.MouseEvent | React.PointerEvent) => void
     compactMode: boolean
     onMenuReady?: (e: any) => void
 }
