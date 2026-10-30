@@ -38,13 +38,18 @@ export const useActionsToRoles = (params: Params): UseActionsToRoles => {
             return params.actionsToRolesService
                 .getActions(params.roleId)
                 .then((actions) => {
+                    const assignedFilter = loadOptions.columnFilters?.assigned
+                    const filteredActions =
+                        assignedFilter === true || assignedFilter === false || assignedFilter === 'true' || assignedFilter === 'false'
+                            ? actions.filter((action) => action.assigned === (assignedFilter === true || assignedFilter === 'true'))
+                            : actions
                     const page = loadOptions.page || 1
-                    const pageSize = loadOptions.pageSize || actions.length
+                    const pageSize = loadOptions.pageSize || filteredActions.length
                     const offset = (page - 1) * pageSize
 
                     return {
-                        data: actions.slice(offset, offset + pageSize),
-                        totalCount: actions.length,
+                        data: filteredActions.slice(offset, offset + pageSize),
+                        totalCount: filteredActions.length,
                     }
                 })
                 .catch(() => {

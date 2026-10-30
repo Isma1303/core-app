@@ -162,6 +162,7 @@ export const DataGrid = forwardRef(({ configuration }: DataGridProps, ref: any) 
                     searchText,
                     sortField,
                     sortDirection,
+                    columnFilters,
                 })
 
                 const sourceRows = Array.isArray(result) ? result : (result.data ?? [])
