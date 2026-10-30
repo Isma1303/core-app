@@ -45,7 +45,7 @@ export const SideNavOuterToolbar = ({ title, children }: { title: string; childr
                 </aside>
 
                 <main className="flex-1 overflow-y-auto" ref={scrollViewRef}>
-                    <div className="mx-auto max-w-6xl space-y-5 p-5">
+                    <div className="flex w-full min-h-full flex-col space-y-5 p-5">
                         <div className="content">
                             {React.Children.map(children, (item) => {
                                 return item.type !== Footer && item

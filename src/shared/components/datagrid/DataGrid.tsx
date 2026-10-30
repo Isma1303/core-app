@@ -2,19 +2,18 @@ import { useEffect, useMemo, useState, forwardRef, useImperativeHandle } from 'r
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
+import { Card, CardContent, CardHeader} from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Separator } from '@/components/ui/separator'
-import { Badge } from '@/components/ui/badge'
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
 import { Empty } from '@/components/ui/empty'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Pagination } from '@/components/ui/pagination'
 import { DataGridProps, DataGridColumn } from '../../interfaces'
-import { ArrowDownUp, Download, FileSpreadsheet, KeyRound, ListChecks, Pencil, Plus, Search, Trash2, ChevronLeft, ChevronRight, ChevronFirst, ChevronLast } from 'lucide-react'
+import { ArrowDownUp, Download, FileSpreadsheet, KeyRound, ListChecks, Pencil, Plus, Search, Trash2 } from 'lucide-react'
 import { saveAs } from 'file-saver'
 import { cn } from '@/lib/utils'
+import { DataGridDatePicker, formatDateValue, toDateKey } from './DataGridDatePicker'
 
 const DEFAULT_PAGE_SIZES = [5, 10, 20]
 
@@ -32,7 +31,7 @@ export const DataGrid = forwardRef(({ configuration }: DataGridProps, ref: any) 
     const [isCreating, setIsCreating] = useState(false)
     const [sortField, setSortField] = useState<string>(configuration.dataId)
     const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc')
-    const [columnFilters, setColumnFilters] = useState<Record<string, string>>({})
+    const [columnFilters, setColumnFilters] = useState<Record<string, any>>({})
     const [selectedId, setSelectedId] = useState<string | number | null>(null)
     const [selectedRows, setSelectedRows] = useState<Record<string, any>[]>([])
     const [changes, setChanges] = useState<Record<string, any>>({})
@@ -79,13 +78,20 @@ export const DataGrid = forwardRef(({ configuration }: DataGridProps, ref: any) 
             .toLowerCase()
             .trim()
 
+   const getCellValue = (row: Record<string, any>, column: DataGridColumn): any =>
+        column.setCellValue ? column.setCellValue(row) : row[column.dataField]
+
     const formatValue = (row: Record<string, any>, column: DataGridColumn): string => {
-        const value = row[column.dataField]
+        const value = getCellValue(row, column)
         const dataSource = lookupData[column.dataField] || (Array.isArray(column.lookup?.dataSource) ? column.lookup?.dataSource : [])
 
         if (column.lookup && dataSource.length > 0 && column.lookup.valueExpr && column.lookup.displayExpr) {
             const lookupItem = dataSource.find((item) => item[column.lookup?.valueExpr as string] === value)
             if (lookupItem) return String(lookupItem[column.lookup.displayExpr])
+        }
+
+        if (column.dataType === 'date') {
+            return formatDateValue(value) || '-'
         }
 
         if (typeof value === 'boolean') return value ? 'Si' : 'No'
@@ -104,11 +110,34 @@ export const DataGrid = forwardRef(({ configuration }: DataGridProps, ref: any) 
 
     const matchesColumnFilters = (row: Record<string, any>): boolean => {
         return columns.every((column: DataGridColumn) => {
-            const filterValue = normalizeText(columnFilters[column.dataField])
-            if (!filterValue) return true
+            const filterValue = columnFilters[column.dataField]
+            if (filterValue === undefined || filterValue === null || filterValue === '') return true
+
+            if (column.dataType === 'date') {
+                const filterKey = toDateKey(filterValue)
+                if (!filterKey) return true
+                return toDateKey(getCellValue(row, column)) === filterKey
+            }
+
+            if (column.dataType === 'boolean') {
+                const expected = filterValue === true || filterValue === 'true'
+                return Boolean(getCellValue(row, column)) === expected
+            }
+
+            if (column.lookup) {
+                const normalizedFilter = normalizeText(filterValue)
+                if (!normalizedFilter) return true
+                return (
+                    normalizeText(getCellValue(row, column)).includes(normalizedFilter) ||
+                    normalizeText(formatValue(row, column)).includes(normalizedFilter)
+                )
+            }
+
+            const normalizedFilter = normalizeText(filterValue)
+            if (!normalizedFilter) return true
 
             const rowValue = normalizeText(formatValue(row, column))
-            return rowValue.includes(filterValue)
+            return rowValue.includes(normalizedFilter)
         })
     }
 
@@ -144,18 +173,49 @@ export const DataGrid = forwardRef(({ configuration }: DataGridProps, ref: any) 
 
                 const filteredBySearch = searchText
                     ? source.filter((row: Record<string, any>) =>
-                          columns.some((column: DataGridColumn) => normalizeText(row[column.dataField]).includes(normalizeText(searchText))),
+                          columns.some((column: DataGridColumn) =>
+                              normalizeText(formatValue(row, column)).includes(normalizeText(searchText)),
+                          ),
                       )
                     : source
 
                 const filtered = filteredBySearch.filter(matchesColumnFilters)
 
-                const sorted = [...filtered].sort((a: Record<string, any>, b: Record<string, any>) => {
-                    const first = normalizeText(a[sortField])
-                    const second = normalizeText(b[sortField])
+                const sortColumn = columns.find((column: DataGridColumn) => column.dataField === sortField)
 
-                    if (first === second) return 0
-                    const comparison = first > second ? 1 : -1
+                const compareValues = (a: Record<string, any>, b: Record<string, any>): number => {
+                    const first = sortColumn ? getCellValue(a, sortColumn) : a[sortField]
+                    const second = sortColumn ? getCellValue(b, sortColumn) : b[sortField]
+
+                    if (sortColumn?.dataType === 'date') {
+                        const firstKey = toDateKey(first)
+                        const secondKey = toDateKey(second)
+                        if (firstKey === secondKey) return 0
+                        return firstKey > secondKey ? 1 : -1
+                    }
+
+                    const firstNumber = Number(first)
+                    const secondNumber = Number(second)
+                    const bothNumeric =
+                        first !== null &&
+                        first !== undefined &&
+                        first !== '' &&
+                        second !== null &&
+                        second !== undefined &&
+                        second !== '' &&
+                        !Number.isNaN(firstNumber) &&
+                        !Number.isNaN(secondNumber)
+
+                    if (bothNumeric) return firstNumber - secondNumber
+
+                    const firstText = normalizeText(first)
+                    const secondText = normalizeText(second)
+                    if (firstText === secondText) return 0
+                    return firstText > secondText ? 1 : -1
+                }
+
+                const sorted = [...filtered].sort((a: Record<string, any>, b: Record<string, any>) => {
+                    const comparison = compareValues(a, b)
                     return sortDirection === 'asc' ? comparison : -comparison
                 })
 
@@ -178,9 +238,21 @@ export const DataGrid = forwardRef(({ configuration }: DataGridProps, ref: any) 
     const totalPages = useMemo(() => Math.max(1, Math.ceil(totalCount / pageSize)), [totalCount, pageSize])
 
     const editableColumns = useMemo(
-        () => columns.filter((column: DataGridColumn) => column.dataField !== configuration.dataId),
+        () => columns.filter((column: DataGridColumn) => column.dataField !== configuration.dataId && !column.setCellValue),
         [columns, configuration.dataId],
     )
+
+    const createColumns = useMemo(
+        () => editableColumns.filter((column: DataGridColumn) => column.allowCreate !== false),
+        [editableColumns],
+    )
+
+    const updateColumns = useMemo(
+        () => editableColumns.filter((column: DataGridColumn) => column.allowDelete !== false),
+        [editableColumns],
+    )
+
+    const formColumns = isCreating ? createColumns : updateColumns
 
     const getLookupValue = (column: DataGridColumn, value: any): string => {
         const dataSource = lookupData[column.dataField] || (Array.isArray(column.lookup?.dataSource) ? column.lookup?.dataSource : [])
@@ -198,6 +270,15 @@ export const DataGrid = forwardRef(({ configuration }: DataGridProps, ref: any) 
 
         const sampleValue = dataSource[0][column.lookup.valueExpr]
         return typeof sampleValue === 'number'
+    }
+
+    const getLookupOptions = (column: DataGridColumn): Record<string, any>[] => {
+        const dataSource = lookupData[column.dataField] || (Array.isArray(column.lookup?.dataSource) ? column.lookup?.dataSource : [])
+
+        return dataSource.filter((item) => {
+            const value = item[column.lookup?.valueExpr as string]
+            return value !== null && value !== undefined && String(value) !== ''
+        })
     }
 
     const onDelete = async (row: Record<string, any>) => {
@@ -253,8 +334,14 @@ export const DataGrid = forwardRef(({ configuration }: DataGridProps, ref: any) 
 
     const onCreate = () => {
         const base: Record<string, any> = {}
-        editableColumns.forEach((column: DataGridColumn) => {
-            base[column.dataField] = column.dataType === 'boolean' ? false : ''
+        createColumns.forEach((column: DataGridColumn) => {
+            if (column.dataType === 'boolean') {
+                base[column.dataField] = false
+            } else if (column.dataType === 'date') {
+                base[column.dataField] = null
+            } else {
+                base[column.dataField] = ''
+            }
         })
         setEditingRow(base)
         setIsCreating(true)
@@ -333,6 +420,94 @@ export const DataGrid = forwardRef(({ configuration }: DataGridProps, ref: any) 
     const handlePageSizeChange = (newSize: number) => {
         setPageSize(newSize)
         setPage(1)
+    }
+
+    const setColumnFilter = (field: string, value: any) => {
+        setColumnFilters((previous) => ({
+            ...previous,
+            [field]: value,
+        }))
+        setPage(1)
+    }
+
+    const renderColumnFilter = (column: DataGridColumn) => {
+        if (column.allowFiltering === false) return null
+
+        const filterValue = columnFilters[column.dataField]
+        const hasValue = filterValue !== undefined && filterValue !== null && filterValue !== ''
+
+        if (column.dataType === 'date') {
+            return (
+                <DataGridDatePicker
+                    compact
+                    placeholder="Filtrar"
+                    value={filterValue}
+                    onChange={(value) => setColumnFilter(column.dataField, value ?? '')}
+                />
+            )
+        }
+
+        if (column.dataType === 'boolean') {
+            return (
+                <Select
+                    value={hasValue ? String(filterValue) : 'all'}
+                    onValueChange={(value) => setColumnFilter(column.dataField, value === 'all' ? '' : value)}
+                >
+                    <SelectTrigger size="sm" className="w-full bg-background border-border/50">
+                        <SelectValue placeholder="Filtrar" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectGroup>
+                            <SelectItem value="all">Todos</SelectItem>
+                            <SelectItem value="true">Si</SelectItem>
+                            <SelectItem value="false">No</SelectItem>
+                        </SelectGroup>
+                    </SelectContent>
+                </Select>
+            )
+        }
+
+        if (column.lookup) {
+            const options = getLookupOptions(column)
+
+            return (
+                <Select
+                    value={hasValue ? String(filterValue) : 'all'}
+                    onValueChange={(value) =>
+                        setColumnFilter(column.dataField, value === 'all' ? '' : isLookupNumeric(column) ? Number(value) : value)
+                    }
+                >
+                    <SelectTrigger size="sm" className="w-full bg-background border-border/50">
+                        <SelectValue placeholder="Filtrar" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectGroup>
+                            <SelectItem value="all">Todos</SelectItem>
+                            {options.map((item, index) => {
+                                const itemValue = item[column.lookup?.valueExpr as string]
+                                const itemLabel = getLookupValue(column, itemValue) || String(itemValue ?? index)
+
+                                return (
+                                    <SelectItem key={`${column.dataField}-filter-${String(itemValue ?? index)}`} value={String(itemValue)}>
+                                        {itemLabel}
+                                    </SelectItem>
+                                )
+                            })}
+                        </SelectGroup>
+                    </SelectContent>
+                </Select>
+            )
+        }
+
+        return (
+            <Input
+                type={column.dataType === 'number' ? 'number' : 'text'}
+                value={filterValue ?? ''}
+                onChange={(event) => setColumnFilter(column.dataField, event.target.value)}
+                placeholder="Filtrar"
+                className="h-8 bg-background border-border/50 focus-visible:ring-1 focus-visible:ring-foreground/20"
+            />
+        )
     }
 
     return (
@@ -415,7 +590,7 @@ export const DataGrid = forwardRef(({ configuration }: DataGridProps, ref: any) 
                 {editingRow && (
                     <div className="rounded-lg border border-border/50 bg-muted/20 p-4 shadow-sm animate-in fade-in slide-in-from-top-2 duration-300">
                         <div className="grid gap-4 md:grid-cols-2">
-                            {editableColumns.map((column: DataGridColumn) => (
+                            {formColumns.map((column: DataGridColumn) => (
                                 <div key={column.dataField} className="flex flex-col gap-1.5 text-sm">
                                     <label className="font-medium text-foreground/90">{column.caption || column.dataField}</label>
                                     {column.dataType === 'boolean' ? (
@@ -427,6 +602,20 @@ export const DataGrid = forwardRef(({ configuration }: DataGridProps, ref: any) 
                                                         ? {
                                                               ...prev,
                                                               [column.dataField]: checked === true,
+                                                          }
+                                                        : prev,
+                                                )
+                                            }
+                                        />
+                                    ) : column.dataType === 'date' ? (
+                                        <DataGridDatePicker
+                                            value={editingRow[column.dataField]}
+                                            onChange={(value) =>
+                                                setEditingRow((prev) =>
+                                                    prev
+                                                        ? {
+                                                              ...prev,
+                                                              [column.dataField]: value,
                                                           }
                                                         : prev,
                                                 )
@@ -455,27 +644,27 @@ export const DataGrid = forwardRef(({ configuration }: DataGridProps, ref: any) 
                                                 <SelectValue placeholder={`Seleccionar ${column.caption || column.dataField}`} />
                                             </SelectTrigger>
                                             <SelectContent>
-                                                <SelectItem value="null">Ninguno</SelectItem>
-                                                {(
-                                                    lookupData[column.dataField] ||
-                                                    (Array.isArray(column.lookup?.dataSource) ? column.lookup?.dataSource : [])
-                                                ).map((item, index) => {
-                                                    const itemValue = item[column.lookup?.valueExpr as string]
-                                                    const itemLabel = getLookupValue(column, itemValue) || String(itemValue ?? index)
+                                                <SelectGroup>
+                                                    <SelectItem value="null">Ninguno</SelectItem>
+                                                    {getLookupOptions(column).map((item, index) => {
+                                                        const itemValue = item[column.lookup?.valueExpr as string]
+                                                        const itemLabel = getLookupValue(column, itemValue) || String(itemValue ?? index)
 
-                                                    return (
-                                                        <SelectItem
-                                                            key={`${column.dataField}-${String(itemValue ?? index)}`}
-                                                            value={String(itemValue)}
-                                                        >
-                                                            {itemLabel}
-                                                        </SelectItem>
-                                                    )
-                                                })}
+                                                        return (
+                                                            <SelectItem
+                                                                key={`${column.dataField}-${String(itemValue ?? index)}`}
+                                                                value={String(itemValue)}
+                                                            >
+                                                                {itemLabel}
+                                                            </SelectItem>
+                                                        )
+                                                    })}
+                                                </SelectGroup>
                                             </SelectContent>
                                         </Select>
                                     ) : (
                                         <Input
+                                            type={column.dataType === 'number' ? 'number' : 'text'}
                                             className="h-9 border-border/50 focus-visible:ring-1 focus-visible:ring-foreground/20 transition-all"
                                             value={editingRow[column.dataField] ?? ''}
                                             onChange={(event) =>
@@ -483,7 +672,12 @@ export const DataGrid = forwardRef(({ configuration }: DataGridProps, ref: any) 
                                                     prev
                                                         ? {
                                                               ...prev,
-                                                              [column.dataField]: event.target.value === '' ? null : event.target.value,
+                                                              [column.dataField]:
+                                                                  event.target.value === ''
+                                                                      ? null
+                                                                      : column.dataType === 'number'
+                                                                        ? Number(event.target.value)
+                                                                        : event.target.value,
                                                           }
                                                         : prev,
                                                 )
@@ -529,26 +723,13 @@ export const DataGrid = forwardRef(({ configuration }: DataGridProps, ref: any) 
                                         </button>
                                     </TableHead>
                                 ))}
-                                {hasActions && <TableHead className="text-right font-semibold text-foreground">Acciones</TableHead>}
+                                {hasActions && <TableHead className="text-center font-semibold text-foreground">Acciones</TableHead>}
                             </TableRow>
                             <TableRow>
                                 {showSelectionColumn && <TableHead />}
                                 {columns.map((column: DataGridColumn) => (
                                     <TableHead key={`${column.dataField}-filter`}>
-                                        {column.allowFiltering !== false && (
-                                            <Input
-                                                value={columnFilters[column.dataField] || ''}
-                                                onChange={(event) => {
-                                                    setColumnFilters((previous) => ({
-                                                        ...previous,
-                                                        [column.dataField]: event.target.value,
-                                                    }))
-                                                    setPage(1)
-                                                }}
-                                                placeholder="Filtrar"
-                                                className="h-8 bg-background border-border/50 focus-visible:ring-1 focus-visible:ring-foreground/20"
-                                            />
-                                        )}
+                                        {renderColumnFilter(column)}
                                     </TableHead>
                                 ))}
                                 {hasActions && <TableHead />}
@@ -611,13 +792,18 @@ export const DataGrid = forwardRef(({ configuration }: DataGridProps, ref: any) 
                                                 >
                                                     {column.cellTemplate ? (
                                                         column.cellTemplate(row)
-                                                    ) : column.dataType === 'boolean' && column.allowEditing !== false ? (
+                                                    ) : column.dataType === 'boolean' &&
+                                                      column.allowEditing !== false &&
+                                                      !column.setCellValue ? (
                                                         <Checkbox
-                                                            checked={changes[rowKey]?.assigned ?? row[column.dataField]}
+                                                            checked={changes[rowKey]?.[column.dataField] ?? getCellValue(row, column)}
                                                             onCheckedChange={(checked) => {
                                                                 setChanges((prev) => ({
                                                                     ...prev,
-                                                                    [rowKey]: { ...prev[rowKey], assigned: checked === true },
+                                                                    [rowKey]: {
+                                                                        ...prev[rowKey],
+                                                                        [column.dataField]: checked === true,
+                                                                    },
                                                                 }))
                                                             }}
                                                         />
@@ -628,7 +814,7 @@ export const DataGrid = forwardRef(({ configuration }: DataGridProps, ref: any) 
                                             ))}
                                             {hasActions && (
                                                 <TableCell className="text-right">
-                                                    <div className="flex justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                    <div className="flex justify-end gap-1">
                                                         {configuration.allowUpdate && (
                                                             <Tooltip>
                                                                 <TooltipTrigger asChild>

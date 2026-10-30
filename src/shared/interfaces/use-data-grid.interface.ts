@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 
-export interface ScpDataGridActions {
+export interface DataGridActions {
     onRowExpanded?: (event: any) => void
     onInitNewRow?: (event: any) => void
     onSelectionChanged?: (event: any) => Promise<void>
@@ -25,7 +25,7 @@ export interface ScpDataGridActions {
     refreshDataGrid: () => void
 }
 
-export interface ScpDataGridProps {
+export interface DataGridProps {
     dataGrid: React.RefObject<any>
     configuration: any
     onInitNewRow?: (event: any) => void
@@ -43,7 +43,7 @@ export interface ScpDataGridProps {
     onRowRemoving?: (event: any) => void
 }
 
-export interface UseDataGridEventsEmits {
+export interface UseGridEventsEmits {
     onDetailsFilter?: (param: string | number) => void
     newInitializedRow?: (param: any) => void
     informationRow?: (param: any) => void

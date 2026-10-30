@@ -19,6 +19,9 @@ export interface DataGridColumn {
     dataType?: 'string' | 'number' | 'boolean' | 'date'
     allowFiltering?: boolean
     allowEditing?: boolean
+    allowCreate?: boolean
+    allowDelete?: boolean
+    setCellValue?: (rowData: Record<string, any>) => any
     lookup?: DataGridLookup
     validationRules?: DataGridValidationRule[]
     cellTemplate?: (row: Record<string, any>) => ReactNode
