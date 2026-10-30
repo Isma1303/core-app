@@ -32,11 +32,24 @@ export const useActionsToRoles = (params: Params): UseActionsToRoles => {
 
     const rolesToActionsCustomStore = {
         key: 'action_id',
-        load: async () => {
-            if (params.roleId === 0) return []
-            return params.actionsToRolesService.getActions(params.roleId).catch(() => {
-                return []
-            })
+        load: async (loadOptions: any) => {
+            if (params.roleId === 0) return { data: [], totalCount: 0 }
+
+            return params.actionsToRolesService
+                .getActions(params.roleId)
+                .then((actions) => {
+                    const page = loadOptions.page || 1
+                    const pageSize = loadOptions.pageSize || actions.length
+                    const offset = (page - 1) * pageSize
+
+                    return {
+                        data: actions.slice(offset, offset + pageSize),
+                        totalCount: actions.length,
+                    }
+                })
+                .catch(() => {
+                    return { data: [], totalCount: 0 }
+                })
         },
     }
 
@@ -103,9 +116,8 @@ export const useActionsToRoles = (params: Params): UseActionsToRoles => {
         allowCreate: false,
         allowExportPDF: false,
         allowExportExcel: false,
-        buttonsInLastColumn: true,
+        buttonsInLastColumn: false,
         margin: '1',
-        editMode: 'batch',
     }
 
     const saveAssignments = async (savingRowsEvent: any) => {
@@ -141,7 +153,6 @@ export const useActionsToRoles = (params: Params): UseActionsToRoles => {
                 toast.success('Permisos Aplicados con Éxito')
             }
         }
-        // DataGrid will refresh after saving if configured correctly
     }
 
     return {

@@ -407,8 +407,8 @@ export const DataGrid = forwardRef(({ configuration }: DataGridProps, ref: any) 
     }
 
     const getButtonIcon = (iconName?: string) => {
-        if (iconName === 'key') return <KeyRound />
-        return <Plus />
+        if (iconName === 'key') return <KeyRound data-icon="inline-start" />
+        return <Plus data-icon="inline-start" />
     }
 
     const colSpanValue = columns.length + (hasActions ? 1 : 0) + (showSelectionColumn ? 1 : 0)
@@ -505,36 +505,21 @@ export const DataGrid = forwardRef(({ configuration }: DataGridProps, ref: any) 
                 value={filterValue ?? ''}
                 onChange={(event) => setColumnFilter(column.dataField, event.target.value)}
                 placeholder="Filtrar"
-                className="h-8 bg-background border-border/50 focus-visible:ring-1 focus-visible:ring-foreground/20"
+                className="h-7 bg-background border-border/50 focus-visible:ring-1 focus-visible:ring-foreground/20"
             />
         )
     }
 
     return (
         <Card className="mt-3 overflow-hidden border-border/50 shadow-sm transition-all hover:shadow-md animate-in fade-in duration-500">
-            <CardHeader className="border-b border-border/50 bg-muted/10 p-4">
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                    {configuration.showSearch && (
-                        <div className="relative w-full max-w-sm">
-                            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                            <Input
-                                value={searchText}
-                                onChange={(event) => {
-                                    setSearchText(event.target.value)
-                                    setPage(1)
-                                }}
-                                placeholder="Buscar..."
-                                className="pl-9 h-10 border-border/50 focus-visible:ring-1 focus-visible:ring-foreground/20 transition-all bg-background"
-                            />
-                        </div>
-                    )}
-
-                    <div className="flex items-center gap-2">
+            <CardHeader className="border-b border-border/50 bg-muted/10 px-3 py-2">
+                <div className="flex flex-wrap items-center justify-between gap-2">                    
+                    <div className="ml-auto flex items-center gap-1.5">
                         {configuration.customButtons?.map((button) => (
                             <Button
                                 key={button.name}
                                 variant="outline"
-                                size="sm"
+                                size="xs"
                                 title={button.hint || button.name}
                                 onClick={() => configuration.customButtonClicked?.(button.name)}
                             >
@@ -547,18 +532,18 @@ export const DataGrid = forwardRef(({ configuration }: DataGridProps, ref: any) 
                             <>
                                 <Button
                                     variant="outline"
-                                    size="sm"
+                                    size="xs"
                                     onClick={exportToCsv}
                                 >
-                                    <Download data-icon="inline-start" />
-                                    <span className="hidden sm:inline">CSV</span>
+                                    <Download data-icon="inline-end" />
+                                    <span className="hidden sm:inline">PDF</span>
                                 </Button>
                                 <Button
                                     variant="outline"
-                                    size="sm"
+                                    size="xs"
                                     onClick={exportToXlsx}
                                 >
-                                    <FileSpreadsheet data-icon="inline-start" />
+                                    <FileSpreadsheet data-icon="inline-end" />
                                     <span className="hidden sm:inline">XLSX</span>
                                 </Button>
                             </>
@@ -566,20 +551,20 @@ export const DataGrid = forwardRef(({ configuration }: DataGridProps, ref: any) 
 
                         {Object.keys(changes).length > 0 && (
                             <Button
-                                size="sm"
+                                size="xs"
                                 variant="default"
                                 onClick={onBatchSave}
                             >
-                                <ListChecks data-icon="inline-start" />
+                                <ListChecks data-icon="inline-end" />
                                 <span className="hidden sm:inline">Guardar Cambios</span>
                             </Button>
                         )}
                         {configuration.allowCreate && (
                             <Button
-                                size="sm"
+                                size="xs"
                                 onClick={onCreate}
                             >
-                                <Plus data-icon="inline-start" />
+                                <Plus data-icon="inline-end" />
                                 <span className="hidden sm:inline">Nuevo</span>
                             </Button>
                         )}
@@ -710,9 +695,9 @@ export const DataGrid = forwardRef(({ configuration }: DataGridProps, ref: any) 
                     <Table>
                         <TableHeader className="bg-muted/30">
                             <TableRow>
-                                {showSelectionColumn && <TableHead className="w-[52px]" />}
+                                {showSelectionColumn && <TableHead className="h-6 w-[45px]" />}
                                 {columns.map((column: DataGridColumn) => (
-                                    <TableHead key={column.dataField} className="font-semibold text-foreground">
+                                    <TableHead key={column.dataField} className="h-8 font-semibold text-foreground">
                                         <button
                                             className="inline-flex items-center gap-1 text-left"
                                             onClick={() => toggleSort(column.dataField)}
@@ -723,16 +708,16 @@ export const DataGrid = forwardRef(({ configuration }: DataGridProps, ref: any) 
                                         </button>
                                     </TableHead>
                                 ))}
-                                {hasActions && <TableHead className="text-center font-semibold text-foreground">Acciones</TableHead>}
+                                {hasActions && <TableHead className="h-8 text-center font-semibold text-foreground">Acciones</TableHead>}
                             </TableRow>
                             <TableRow>
-                                {showSelectionColumn && <TableHead />}
+                                {showSelectionColumn && <TableHead className="h-8" />}
                                 {columns.map((column: DataGridColumn) => (
-                                    <TableHead key={`${column.dataField}-filter`}>
+                                    <TableHead key={`${column.dataField}-filter`} className="h-8 p-1">
                                         {renderColumnFilter(column)}
                                     </TableHead>
                                 ))}
-                                {hasActions && <TableHead />}
+                                {hasActions && <TableHead className="h-8" />}
                             </TableRow>
                         </TableHeader>
                         <TableBody>

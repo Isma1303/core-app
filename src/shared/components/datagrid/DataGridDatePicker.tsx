@@ -106,7 +106,7 @@ export function DataGridDatePicker({
                         data-empty={!selected}
                         className={cn(
                             'w-full justify-start gap-2 text-left font-normal data-[empty=true]:text-muted-foreground',
-                            compact ? 'h-8 pr-8 text-[0.8rem]' : 'h-9 pr-8',
+                            compact ? 'h-7 pr-7 text-[0.8rem]' : 'h-9 pr-8',
                         )}
                     >
                         <CalendarDays data-icon="inline-start" />
